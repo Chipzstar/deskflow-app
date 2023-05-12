@@ -6,10 +6,11 @@ import { OpenAIMessage } from '../../../utils/types';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
 		await runMiddleware(req, res, cors);
-		const { query, history } = req.body as { query: string; history: OpenAIMessage[] };
+		const { query, name, history } = req.body as { query: string; name: string; history: OpenAIMessage[] };
 		console.log(query, history);
 		const response = await axios.post(`${process.env.API_HOST}/api/v1/generate-chat-response`, {
 			query: query,
+			name: name,
 			history: history
 		});
 		console.log(response.data);

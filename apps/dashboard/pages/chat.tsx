@@ -57,6 +57,7 @@ export function Chat() {
 				});
 				const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/api/v1/generate-chat-response`, {
 					query: values.query,
+					name: values.name,
 					history: history
 				});
 				const { reply, messages: openai_messages } = response.data as OpenAIResponse;
@@ -78,7 +79,7 @@ export function Chat() {
 	);
 
 	return (
-		<Page.Container extraClassNames="justify-center">
+		<Page.Container extraClassNames="justify-end items-center">
 			<Stack w={width * 0.66}>
 				<form onSubmit={form.onSubmit(chat)}>
 					<MessageList thinking={loading} />
