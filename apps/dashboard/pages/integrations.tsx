@@ -5,7 +5,7 @@ import IntegrationCard from '../components/IntegrationCard';
 
 const Integrations = () => {
 	return (
-		<Page.Container extraClassNames="justify-between">
+		<Page.Container extraClassNames="justify-around">
 			<div className="flex flex-col space-y-4">
 				<Title weight="500" size={20}>
 					Knowledge Base
