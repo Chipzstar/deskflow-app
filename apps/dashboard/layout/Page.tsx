@@ -26,7 +26,7 @@ const Container = ({
 	return (
 		<MantineContainer
 			p="xl"
-			pl={50}
+			px={50}
 			fluid
 			mih={height - DEFAULT_HEADER_HEIGHT}
 			className={`${classNames} ${extraClassNames}`}
