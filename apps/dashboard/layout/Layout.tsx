@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { AppShell, Burger, Header, MediaQuery } from '@mantine/core';
+import { AppShell, Burger, Group, Header, Image, Text, MediaQuery } from '@mantine/core';
 import { useRouter } from 'next/router';
-import { AUTH_ROUTES } from '../utils/constants';
+import { AUTH_ROUTES, DEFAULT_HEADER_HEIGHT, PATHS } from '../utils/constants';
 import Sidebar from './Sidebar';
 import { useMediaQuery } from '@mantine/hooks';
 
@@ -18,21 +18,29 @@ const Layout = ({ children }) => {
 				navbar={isLoggedIn ? <Sidebar opened={opened} setOpened={setOpened} /> : undefined}
 				navbarOffsetBreakpoint="sm"
 				header={
-					mobileScreen ? (
-						<Header height={{ base: 50 }} p="md">
-							<div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-								<MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-									<Burger
-										opened={opened}
-										onClick={() => setOpened(o => !o)}
-										size="sm"
-										color="gray"
-										mr="xl"
-									/>
-								</MediaQuery>
+					<Header height={{ base: 50, sm: DEFAULT_HEADER_HEIGHT }} p="md">
+						<div className="flex items-center h-full">
+							<div
+								className="flex space-x-2 justify-center"
+								role="button"
+								onClick={() => router.push(PATHS.HOME)}
+							>
+								<Image src="/static/images/logo.svg" width={50} height={45} alt="" />
+								<Text size={28} weight="normal">
+									deskflow
+								</Text>
 							</div>
-						</Header>
-					) : undefined
+							<MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+								<Burger
+									opened={opened}
+									onClick={() => setOpened(o => !o)}
+									size="sm"
+									color="gray"
+									mr="xl"
+								/>
+							</MediaQuery>
+						</div>
+					</Header>
 				}
 			>
 				{children}

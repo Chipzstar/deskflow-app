@@ -1,5 +1,7 @@
 import React from 'react';
 import { DEFAULT_HEADER_HEIGHT } from '../utils/constants';
+import { Container as MantineContainer } from '@mantine/core';
+import { useViewportSize } from '@mantine/hooks';
 
 interface PageContainerProps {
 	children: JSX.Element | JSX.Element[];
@@ -16,15 +18,23 @@ const Page = ({ children }) => {
 const Container = ({
 	children,
 	header = undefined,
-	classNames = 'h-full sm:h-screen flex flex-col pb-2 bg-accent',
+	classNames = 'h-full sm:h-screen flex flex-col bg-body',
 	extraClassNames = '',
 	data_cy = undefined
 }: PageContainerProps) => {
+	const { height } = useViewportSize();
 	return (
-		<div className={`${classNames} ${extraClassNames}`} data-cy={data_cy}>
+		<MantineContainer
+			p="xl"
+			pl={50}
+			fluid
+			mih={height - DEFAULT_HEADER_HEIGHT}
+			className={`${classNames} ${extraClassNames}`}
+			data-cy={data_cy}
+		>
 			{header}
 			{children}
-		</div>
+		</MantineContainer>
 	);
 };
 

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { createStyles, getStylesRef, Group, Navbar, Text } from '@mantine/core';
-import { IconLicense, IconLogout, IconUser } from '@tabler/icons-react';
-import Image from 'next/image';
+import { createStyles, getStylesRef, Navbar } from '@mantine/core';
+import { IconCode, IconHome, IconLogout, IconMessage } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { DEFAULT_HEADER_HEIGHT, PATHS } from '../utils/constants';
 import { useViewportSize } from '@mantine/hooks';
@@ -26,10 +25,11 @@ const useStyles = createStyles((theme, _params) => {
 		link: {
 			...theme.fn.focusStyles(),
 			display: 'flex',
+			justifyItems: 'center',
 			alignItems: 'center',
 			fontSize: theme.fontSizes.lg,
+			padding: theme.spacing.md,
 			color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[7],
-			padding: `10px 20px`,
 			borderRadius: theme.radius.sm,
 			fontWeight: 500,
 
@@ -44,8 +44,7 @@ const useStyles = createStyles((theme, _params) => {
 		},
 		linkIcon: {
 			ref: getStylesRef('icon'),
-			color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
-			marginRight: theme.spacing.sm
+			color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6]
 		},
 		linkActive: {
 			'&, &:hover': {
@@ -79,16 +78,23 @@ const Sidebar = ({ opened, setOpened }) => {
 		general: [
 			{
 				link: PATHS.HOME,
-				label: 'Papers',
-				icon: IconLicense,
+				label: 'Home',
+				icon: IconHome,
 				isActive: router.pathname === PATHS.HOME,
 				disabled: false
 			},
 			{
 				link: PATHS.INTEGRATIONS,
-				label: 'Profile',
-				icon: IconUser,
+				label: 'Integrations',
+				icon: IconCode,
 				isActive: router.pathname === PATHS.INTEGRATIONS,
+				disabled: false
+			},
+			{
+				link: PATHS.CHAT,
+				label: 'Chat',
+				icon: IconMessage,
+				isActive: router.pathname === PATHS.CHAT,
 				disabled: false
 			}
 		]
@@ -109,25 +115,20 @@ const Sidebar = ({ opened, setOpened }) => {
 				opened && setOpened(false);
 			}}
 		>
-			<item.icon className={classes.linkIcon} stroke={1.5} />
-			<span>{item.label}</span>
+			<div className="flex justify-center w-full h-full">
+				<item.icon className={classes.linkIcon} stroke={1.5} />
+			</div>
 		</div>
 	));
 
 	return (
-		<Navbar hiddenBreakpoint="sm" hidden={!opened} width={{ base: width, sm: 250 }} p="xs">
-			<Navbar.Section className={classes.header}>
-				<Group spacing="sm" role="button" onClick={() => router.push(PATHS.HOME)}>
-					<Image src="/static/images/logo-blue.svg" width={40} height={35} alt="" />
-					<Text size={24} weight="600" color="brand">
-						ExamGenius
-					</Text>
-				</Group>
-			</Navbar.Section>
-			<Navbar.Section grow mt={100} className="flex flex-col">
+		<Navbar hiddenBreakpoint="sm" hidden={!opened} width={{ base: width, sm: 80 }} p="xs">
+			<Navbar.Section grow className="flex flex-col items-center">
 				{links}
+			</Navbar.Section>
+			<Navbar.Section className={classes.footer}>
 				<div data-cy="logout-button" role="button" className={classes.link}>
-					<IconLogout className={classes.linkIcon} stroke={1.5} /> <span>Logout</span>
+					<IconLogout className={classes.linkIcon} stroke={1.5} />
 				</div>
 			</Navbar.Section>
 		</Navbar>

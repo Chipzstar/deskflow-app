@@ -1,6 +1,7 @@
 import { createEmotionCache, MantineProvider } from '@mantine/core';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import Layout from '../layout/Layout';
 import { AuthProvider } from '../context/AuthContext';
 import { MessageProvider } from '../context/MessageContext';
 import { OpenAIMessageProvider } from '../context/OpenAIContext';
@@ -22,11 +23,6 @@ const inter = localFont({
 			style: 'normal'
 		},
 		{
-			path: '../public/static/fonts/Inter/Inter-Italic.ttf',
-			weight: '400',
-			style: 'italic'
-		},
-		{
 			path: '../public/static/fonts/Inter/Inter-Medium.ttf',
 			weight: '500',
 			style: 'normal'
@@ -41,9 +37,8 @@ const inter = localFont({
 			weight: '700'
 		},
 		{
-			path: '../public/static/fonts/Inter/Inter-BoldItalic.ttf',
-			weight: '700',
-			style: 'italic'
+			path: '../public/static/fonts/Inter/Inter-ExtraBold.ttf',
+			weight: '800'
 		}
 	],
 	variable: '--font-inter'
@@ -78,6 +73,18 @@ function CustomApp({ Component, pageProps }: AppProps) {
 										'#081CA4',
 										'#05136F',
 										'#030A39'
+									],
+									background: [
+										'#FFFFFF',
+										'#FFFFFF',
+										'#FFFFFF',
+										'#FEFEFE',
+										'#EAEAEA',
+										'#CECECE',
+										'#B2B2B2',
+										'#969696',
+										'#7A7A7A',
+										'#6C6C6C'
 									]
 								},
 								primaryColor: 'brand',
@@ -102,7 +109,9 @@ function CustomApp({ Component, pageProps }: AppProps) {
 							<RouterTransition />
 							<main className="app">
 								<Notifications position="top-right" />
-								<Component {...pageProps} />
+								<Layout>
+									<Component {...pageProps} />
+								</Layout>
 							</main>
 						</MantineProvider>
 					</OpenAIMessageProvider>
