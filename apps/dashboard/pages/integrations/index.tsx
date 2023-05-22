@@ -13,10 +13,9 @@ const Integrations = () => {
 		switch (name) {
 			case 'slack':
 				// eslint-disable-next-line no-case-declarations
-				const redirect_origin =
-					process.env.NEXT_PUBLIC_VERCEL_URL || 'https://6373-146-198-166-178.ngrok-free.app';
+				const redirect_origin = process.env.NEXT_PUBLIC_VERCEL_URL || '6373-146-198-166-178.ngrok-free.app';
 				void router.push(
-					`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=${redirect_origin}/integrations/slack`
+					`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=https://${redirect_origin}/integrations/slack`
 				);
 				break;
 			default:
