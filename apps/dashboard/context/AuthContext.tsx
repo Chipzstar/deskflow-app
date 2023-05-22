@@ -13,7 +13,7 @@ interface AuthContext {
 
 export const AuthContext = createContext<AuthContext>({
 	user: null,
-	setUser: user => {}
+	setUser: user => null
 });
 
 export const AuthProvider = ({ children }) => {

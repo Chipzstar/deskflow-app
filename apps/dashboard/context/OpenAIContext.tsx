@@ -12,7 +12,10 @@ interface MessageContext {
 	setHistory: (messages: OpenAIMessage[]) => void;
 }
 
-export const OpenAIContext = createContext<MessageContext>(null);
+export const OpenAIContext = createContext<MessageContext>({
+	history: [],
+	setHistory: () => null
+});
 
 export const OpenAIMessageProvider = ({ children }) => {
 	const [openaiChatMessages, handlers] = useListState<OpenAIMessage>([]);

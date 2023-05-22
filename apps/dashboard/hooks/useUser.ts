@@ -4,11 +4,11 @@ import { useLocalStorage } from '@mantine/hooks';
 
 export const useUser = () => {
 	const { user, setUser } = useContext(AuthContext);
-	const [localUser, storeUser] = useLocalStorage({ key: 'user', defaultValue: null });
+	const [localUser, storeUser] = useLocalStorage<User | null>({ key: 'user', defaultValue: null });
 
 	const addUser = (user: User) => {
 		setUser(user);
-		storeUser(JSON.stringify(user));
+		storeUser(user);
 	};
 
 	const removeUser = () => {

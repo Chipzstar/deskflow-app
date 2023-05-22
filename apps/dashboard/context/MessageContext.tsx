@@ -1,5 +1,4 @@
-import React, { createContext, useState } from 'react';
-import { User } from './AuthContext';
+import React, { createContext } from 'react';
 import { useListState } from '@mantine/hooks';
 import { nanoid } from 'nanoid';
 import { faker } from '@faker-js/faker';
@@ -50,7 +49,11 @@ const SAMPLE_MESSAGES: Message[] = [
 	}
 ];
 
-export const MessageContext = createContext<MessageContext>(null);
+export const MessageContext = createContext<MessageContext>({
+	messages: [],
+	addMessage: () => null,
+	clearChat: () => null
+});
 
 export const MessageProvider = ({ children }) => {
 	const [chatHistory, handlers] = useListState<Message>([]);
