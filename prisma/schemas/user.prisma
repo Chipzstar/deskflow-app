@@ -1,0 +1,15 @@
+model User {
+  id                     Int      @id @default(autoincrement())
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+  clerk_id               String   @unique
+  email                  String   @unique
+  firstname              String
+  lastname               String
+  fullname               String
+  stripe_customer_id     String?
+  stripe_payment_medthod String?
+  stripe_subscription_id String?
+  slack_access_token     String   @default("")
+  zendesk_access_token   String   @default("")
+}
