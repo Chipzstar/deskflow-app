@@ -23,7 +23,7 @@ const userRouter = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			try {
-				await ctx.prisma.user.update({
+				const user = await ctx.prisma.user.update({
 					where: {
 						clerk_id: 'user_2QC5J2hrNzky9c8PHta8z57No3o'
 					},
@@ -31,6 +31,7 @@ const userRouter = createTRPCRouter({
 						slack_auth_state_id: input.state
 					}
 				});
+				console.log(user);
 				return 'Success';
 			} catch (err) {
 				console.error(err);
