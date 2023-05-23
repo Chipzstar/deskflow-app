@@ -8,6 +8,7 @@ import { OpenAIMessageProvider } from '../context/OpenAIContext';
 import RouterTransition from '../layout/RouterTransition';
 import { Notifications } from '@mantine/notifications';
 import localFont from '@next/font/local';
+import { trpc } from '../utils/trpc';
 import '../styles/globals.css';
 
 const inter = localFont({
@@ -121,4 +122,4 @@ function CustomApp({ Component, pageProps }: AppProps) {
 	);
 }
 
-export default CustomApp;
+export default trpc.withTRPC(CustomApp);

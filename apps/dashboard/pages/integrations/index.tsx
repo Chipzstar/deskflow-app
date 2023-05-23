@@ -1,21 +1,29 @@
 import React, { useCallback } from 'react';
-import { Group, SimpleGrid, Title } from '@mantine/core';
+import { SimpleGrid, Title } from '@mantine/core';
 import Page from '../../layout/Page';
 import IntegrationCard from '../../components/IntegrationCard';
+import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from 'next/router';
+import { trpc } from '../../utils/trpc';
 
 const Integrations = () => {
 	const router = useRouter();
+	const { mutate: updateState } = trpc.user.updateSlackState.useMutation();
 
 	const integrate = useCallback(name => {
+		const state = uuidv4();
 		const SLACK_CLIENT_ID = String(process.env.NEXT_PUBLIC_SLACK_CLIENT_ID);
 		const SLACK_SCOPES = String(process.env.NEXT_PUBLIC_SLACK_SCOPES);
 		switch (name) {
 			case 'slack':
 				// eslint-disable-next-line no-case-declarations
-				const redirect_origin = process.env.NEXT_PUBLIC_VERCEL_URL || '6373-146-198-166-178.ngrok-free.app';
+				const redirect_origin = process.env.NEXT_PUBLIC_VERCEL_URL || 'd242-82-132-226-173.ngrok-free.app';
+				updateState({
+					state
+				});
+				slac;
 				void router.push(
-					`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=https://${redirect_origin}/integrations/slack`
+					`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=https://${redirect_origin}/integrations/slack&state=${state}`
 				);
 				break;
 			default:

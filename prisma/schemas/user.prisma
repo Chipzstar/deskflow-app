@@ -8,8 +8,10 @@ model User {
   lastname               String
   fullname               String
   stripe_customer_id     String?
-  stripe_payment_medthod String?
+  stripe_payment_method  String?
   stripe_subscription_id String?
   slack_access_token     String   @default("")
+  slack_auth_state_id    String   @default("")
   zendesk_access_token   String   @default("")
+  slack                  Slack?
 }

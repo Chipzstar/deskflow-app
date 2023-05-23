@@ -30,6 +30,7 @@
     "@next/font": "^13.4.2",
     "@nrwl/next": "16.1.4",
     "@prisma/client": "^4.14.1",
+    "@slack/web-api": "^6.8.1",
     "@tabler/icons-react": "^2.17.0",
     "@tanstack/react-query": "^4.29.7",
     "@trpc/client": "^10.27.1",
@@ -49,6 +50,7 @@
     "stripe": "^12.6.0",
     "superjson": "^1.12.3",
     "tslib": "^2.3.0",
+    "uuid": "^9.0.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
