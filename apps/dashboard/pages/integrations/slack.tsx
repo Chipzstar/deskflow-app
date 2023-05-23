@@ -14,7 +14,8 @@ const Slack = () => {
 		const searchParams = new URLSearchParams(router.asPath.split('?')[1]);
 		const hasCode = searchParams.has('code');
 		const hasState = searchParams.has('state');
-
+		console.log('State: ', hasState);
+		console.log('Code: ', hasCode);
 		if (hasCode && hasState) {
 			exchange({
 				code: String(searchParams.get('code')),
