@@ -17,7 +17,7 @@ const Integrations = () => {
 		switch (name) {
 			case 'slack':
 				// eslint-disable-next-line no-case-declarations
-				const redirect_origin = process.env.NEXT_PUBLIC_VERCEL_URL || 'd242-82-132-226-173.ngrok-free.app';
+				const redirect_origin = process.env.NEXT_PUBLIC_HOST_DOMAIN;
 				updateState({
 					state
 				});
