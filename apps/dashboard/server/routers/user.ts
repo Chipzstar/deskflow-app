@@ -23,6 +23,7 @@ const userRouter = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			try {
+				console.log('user_2QC5J2hrNzky9c8PHta8z57No3o');
 				const user = await ctx.prisma.user.update({
 					where: {
 						clerk_id: 'user_2QC5J2hrNzky9c8PHta8z57No3o'

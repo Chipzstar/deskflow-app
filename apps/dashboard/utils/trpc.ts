@@ -22,7 +22,6 @@ function getBaseUrl() {
 }
 
 export const trpc = createTRPCNext<AppRouter>({
-	// @ts-ignore
 	config: function ({ ctx }) {
 		return {
 			transformer: superjson,
