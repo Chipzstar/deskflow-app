@@ -22,7 +22,7 @@ const Integrations = () => {
 					state
 				});
 				void router.push(
-					`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=https://${redirect_origin}/integrations/slack&state=${state}`
+					`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=${redirect_origin}/integrations/slack&state=${state}`
 				);
 				break;
 			default:
