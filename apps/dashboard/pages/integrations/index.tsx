@@ -8,7 +8,7 @@ import { trpc } from '../../utils/trpc';
 
 const Integrations = () => {
 	const router = useRouter();
-	const { mutate: updateState } = trpc.user.updateSlackState.useMutation();
+	const { mutateAsync: updateState } = trpc.user.updateSlackState.useMutation();
 
 	const integrate = useCallback(name => {
 		const state = uuidv4();
@@ -20,10 +20,14 @@ const Integrations = () => {
 				const redirect_origin = process.env.NEXT_PUBLIC_HOST_DOMAIN;
 				updateState({
 					state
-				});
-				void router.push(
-					`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=${redirect_origin}/integrations/slack&state=${state}`
-				);
+				})
+					.then(
+						() =>
+							void router.push(
+								`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=${redirect_origin}/integrations/slack&state=${state}`
+							)
+					)
+					.catch(err => console.error(err));
 				break;
 			default:
 				return null;
