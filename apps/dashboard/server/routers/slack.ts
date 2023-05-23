@@ -25,6 +25,7 @@ const slackRouter = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			try {
+				console.table(input);
 				// look up the user with a matching state value
 				const user = await ctx.prisma.user.findFirst({
 					where: {
