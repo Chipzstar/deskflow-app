@@ -41,7 +41,8 @@ const slackRouter = createTRPCRouter({
 				const result = await new WebClient().oauth.v2.access({
 					client_id: clientId,
 					client_secret: clientSecret,
-					code: input.code
+					code: input.code,
+					redirect_uri: `${process.env.HOST_DOMAIN}/integrations/slack`
 				});
 				console.table(result);
 				const slack = await ctx.prisma.slack.findUnique({
