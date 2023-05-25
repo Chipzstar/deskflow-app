@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import Page from '../../layout/Page';
 import { Button, Chip, Stack, Title, Image, Space, Group, Text } from '@mantine/core';
-import { IconExternalLink } from '@tabler/icons-react';
+import { IconExternalLink, IconX } from '@tabler/icons-react';
 import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';
+import axios from 'axios';
+import { notifyError } from '../../utils/functions';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
-	const { mutate: exchange } = trpc.slack.exchangeToken.useMutation();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -17,10 +18,16 @@ const Slack = () => {
 		console.log('State: ', hasState);
 		console.log('Code: ', hasCode);
 		if (hasCode && hasState) {
-			exchange({
-				code: String(searchParams.get('code')),
-				state: String(searchParams.get('state'))
-			});
+			axios
+				.post(`${process.env.NEXT_PUBLIC_API_HOST}/slack/oauth/callback`, {
+					code: searchParams.get('code'),
+					state: searchParams.get('state')
+				})
+				.then(r => console.log(r))
+				.catch(e => {
+					console.log(e);
+					notifyError('failed-slack-token-exchange', e.message, <IconX size={20} />);
+				});
 		}
 	}, [router.asPath]);
 
@@ -68,7 +75,7 @@ const Slack = () => {
 					</Group>
 				</Stack>
 				<Stack align="center">
-					<Image src="/static/images/alfred.svg" height={100} width={100} />
+					<Image src="/static/images/alfred.svg" height={100} width={100} alt="Alfred logo" />
 					<Button component="a" href="" variant="outline" leftIcon={<IconExternalLink size="0.9rem" />}>
 						Open in Slack App
 					</Button>
