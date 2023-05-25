@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { SimpleGrid, Title } from '@mantine/core';
+import { LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
 import Page from '../../layout/Page';
 import IntegrationCard from '../../components/IntegrationCard';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,7 +8,7 @@ import { trpc } from '../../utils/trpc';
 
 const Integrations = () => {
 	const router = useRouter();
-	const { mutateAsync: updateState } = trpc.user.updateSlackState.useMutation();
+	const { isLoading, mutateAsync: updateState } = trpc.user.updateSlackState.useMutation();
 
 	const integrate = useCallback(name => {
 		const state = uuidv4();
@@ -36,6 +36,7 @@ const Integrations = () => {
 
 	return (
 		<Page.Container extraClassNames="justify-around">
+			<LoadingOverlay overlayBlur={2} visible={isLoading} />
 			<div className="flex flex-col space-y-4">
 				<Title weight="500" size={20}>
 					Knowledge Base
