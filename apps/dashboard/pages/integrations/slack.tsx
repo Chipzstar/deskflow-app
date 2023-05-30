@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import Page from '../../layout/Page';
-import { Button, Chip, Stack, Title, Image, Space, Group, Text } from '@mantine/core';
-import { IconExternalLink, IconX } from '@tabler/icons-react';
+import { Chip, Group, Image, Space, Stack, Text, Title } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { notifyError } from '../../utils/functions';
+import AddToSlack from '../../components/AddToSlack';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
@@ -76,9 +77,7 @@ const Slack = () => {
 				</Stack>
 				<Stack align="center">
 					<Image src="/static/images/alfred.svg" height={100} width={100} alt="Alfred logo" />
-					<Button component="a" href="" variant="outline" leftIcon={<IconExternalLink size="0.9rem" />}>
-						Open in Slack App
-					</Button>
+					<AddToSlack />
 				</Stack>
 			</Stack>
 		</Page.Container>

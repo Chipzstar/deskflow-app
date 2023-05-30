@@ -6,11 +6,15 @@ import { WebClient } from '@slack/web-api';
 const slackRouter = createTRPCRouter({
 	getSlackInfo: publicProcedure.query(async ({ ctx }) => {
 		try {
-			return await ctx.prisma.slack.findUniqueOrThrow({
+			const slack = await ctx.prisma.slack.findUnique({
 				where: {
 					user_id: 'user_2QC5J2hrNzky9c8PHta8z57No3o'
 				}
 			});
+			if (!slack) {
+				throw new TRPCError({ code: 'NOT_FOUND', message: 'No Slack configuration found' });
+			}
+			return slack;
 		} catch (err) {
 			console.error(err);
 			throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message });

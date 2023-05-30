@@ -11,6 +11,7 @@ function getBaseUrl() {
 	if (typeof window !== 'undefined')
 		// browser should use relative path
 		return '';
+	if (process.env.NGROK_URL) return String(process.env.NGROK_URL);
 	if (process.env.VERCEL_URL)
 		// reference for vercel.com
 		return `https://${process.env.VERCEL_URL}`;
