@@ -18,7 +18,7 @@
   },
   "private": true,
   "dependencies": {
-    "@clerk/nextjs": "^4.18.2",
+    "@clerk/nextjs": "^4.19.0",
     "@emotion/react": "11.10.5",
     "@emotion/server": "^11.10.0",
     "@mantine/core": "^6.0.10",

@@ -1,11 +1,11 @@
 import * as trpc from '@trpc/server';
 import * as trpcNext from '@trpc/server/adapters/next';
 import { getAuth } from '@clerk/nextjs/server';
-import type { SignedInAuthObject, SignedOutAuthObject } from '@clerk/nextjs/dist/api';
 import { prisma } from './prisma';
 import { redis } from './redis';
 import { stripe } from './stripe';
 import { NextApiRequest, NextApiResponse } from 'next';
+import type { SignedInAuthObject, SignedOutAuthObject } from '@clerk/backend';
 
 interface AuthContext {
 	auth: SignedInAuthObject | SignedOutAuthObject;
