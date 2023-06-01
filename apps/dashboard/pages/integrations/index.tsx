@@ -1,42 +1,76 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
 import Page from '../../layout/Page';
 import IntegrationCard from '../../components/IntegrationCard';
-import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
+import axios from 'axios';
+import { useId } from '@mantine/hooks';
+import { notifyError, notifySuccess } from '../../utils/functions';
+import { IconCheck, IconX } from '@tabler/icons-react';
 
 const Integrations = () => {
 	const router = useRouter();
-	const { isLoading, mutateAsync: updateState } = trpc.user.updateSlackState.useMutation();
+	const [loading, setLoading] = useState(false);
+	const { mutateAsync: updateState } = trpc.user.updateSlackState.useMutation();
+	const state = useId();
 
-	const integrate = useCallback(name => {
-		const state = uuidv4();
-		const SLACK_CLIENT_ID = String(process.env.NEXT_PUBLIC_SLACK_CLIENT_ID);
-		const SLACK_SCOPES = String(process.env.NEXT_PUBLIC_SLACK_SCOPES);
-		switch (name) {
-			case 'slack':
-				// eslint-disable-next-line no-case-declarations
-				const redirect_origin = process.env.NEXT_PUBLIC_NGROK_URL || process.env.NEXT_PUBLIC_HOST_DOMAIN;
-				updateState({
-					state
-				})
-					.then(
-						res =>
+	const integrate = useCallback(
+		name => {
+			const SLACK_CLIENT_ID = String(process.env.NEXT_PUBLIC_SLACK_CLIENT_ID);
+			const SLACK_SCOPES = String(process.env.NEXT_PUBLIC_SLACK_SCOPES);
+			switch (name) {
+				case 'zendesk-guide':
+					setLoading(true);
+					axios
+						.post(`${process.env.NEXT_PUBLIC_API_HOST}/zendesk/knowledge-base`, {})
+						.then(res => {
+							console.table(res.data);
+							setLoading(false);
+							notifySuccess(
+								'zendesk-guide-successful',
+								'Zendesk knowledge base integrated successfully!',
+								<IconCheck size={20} />
+							);
+						})
+						.catch(err => {
+							setLoading(false);
+							console.error(err);
+							notifyError(
+								'zendesk-guide-failed',
+								`Zendesk knowledge base integration failed! ${err.message}`,
+								<IconX size={20} />
+							);
+						});
+					break;
+				case 'slack':
+					setLoading(true);
+					// eslint-disable-next-line no-case-declarations
+					const redirect_origin = process.env.NEXT_PUBLIC_NGROK_URL || process.env.NEXT_PUBLIC_HOST_DOMAIN;
+					updateState({
+						state
+					})
+						.then(res => {
+							setLoading(false);
 							void router.push(
 								`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=${redirect_origin}/integrations/slack&state=${state}`
-							)
-					)
-					.catch(err => console.error(err));
-				break;
-			default:
-				return null;
-		}
-	}, []);
+							);
+						})
+						.catch(err => {
+							console.error(err);
+							setLoading(false);
+						});
+					break;
+				default:
+					return null;
+			}
+		},
+		[state]
+	);
 
 	return (
 		<Page.Container extraClassNames="justify-around">
-			<LoadingOverlay overlayBlur={2} visible={isLoading} />
+			<LoadingOverlay overlayBlur={2} visible={loading} />
 			<div className="flex flex-col space-y-4">
 				<Title weight="500" size={20}>
 					Knowledge Base
