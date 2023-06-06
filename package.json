@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve",
+    "start": "doppler run -c dev -p deskflow-app -- nx serve",
     "build": "nx build",
     "test": "nx test",
     "prisma:sync": "npx prismerge -i prismerge.json && npx prisma generate && npx prisma db push",

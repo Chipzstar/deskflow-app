@@ -1,59 +1,70 @@
 import React, { useCallback, useState } from 'react';
 import { LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
+import { v4 as uuidv4 } from 'uuid';
 import Page from '../../layout/Page';
 import IntegrationCard from '../../components/IntegrationCard';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
-import axios from 'axios';
-import { useId } from '@mantine/hooks';
-import { notifyError, notifySuccess } from '../../utils/functions';
-import { IconCheck, IconX } from '@tabler/icons-react';
+import * as querystring from 'querystring';
+import { IconX } from '@tabler/icons-react';
+import { notifyError } from '../../utils/functions';
+import { useLocalStorage } from '@mantine/hooks';
 
 const Integrations = () => {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
-	const { mutateAsync: updateState } = trpc.user.updateSlackState.useMutation();
-	const state = useId();
+	const { mutateAsync: updateSlackState } = trpc.user.updateSlackState.useMutation();
+	const { mutateAsync: updateZendeskState } = trpc.user.updateZendeskState.useMutation();
+	const [subdomain, setSubdomain] = useLocalStorage({ key: 'zendesk-subdomain', defaultValue: 'omnicentra' });
+	const state = uuidv4();
 
 	const integrate = useCallback(
 		name => {
+			const redirect_origin = process.env.NEXT_PUBLIC_NGROK_URL || process.env.NEXT_PUBLIC_HOST_DOMAIN;
 			const SLACK_CLIENT_ID = String(process.env.NEXT_PUBLIC_SLACK_CLIENT_ID);
 			const SLACK_SCOPES = String(process.env.NEXT_PUBLIC_SLACK_SCOPES);
+			const ZENDESK_CLIENT_ID = String(process.env.NEXT_PUBLIC_ZENDESK_CLIENT_ID);
+			const ZENDESK_SCOPES = String(process.env.NEXT_PUBLIC_ZENDESK_SCOPES);
+			const ZENDESK_SUBDOMAIN = 'omnicentra';
 			switch (name) {
 				case 'zendesk-guide':
 					setLoading(true);
-					axios
-						.post(`${process.env.NEXT_PUBLIC_API_HOST}/zendesk/knowledge-base`, {})
-						.then(res => {
-							console.table(res.data);
-							setLoading(false);
-							notifySuccess(
-								'zendesk-guide-successful',
-								'Zendesk knowledge base integrated successfully!',
-								<IconCheck size={20} />
+					updateZendeskState({
+						state
+					})
+						.then(() => {
+							void router.push(
+								`https://${ZENDESK_SUBDOMAIN}.zendesk.com/oauth/authorizations/new?${querystring.stringify(
+									{
+										response_type: 'code',
+										redirect_uri: `${redirect_origin}/integrations/zendesk-guide`,
+										client_id: ZENDESK_CLIENT_ID,
+										scope: ZENDESK_SCOPES,
+										state
+									}
+								)}`
 							);
 						})
 						.catch(err => {
-							setLoading(false);
 							console.error(err);
-							notifyError(
-								'zendesk-guide-failed',
-								`Zendesk knowledge base integration failed! ${err.message}`,
-								<IconX size={20} />
-							);
+							setLoading(false);
+							notifyError('zendesk-authorization-failed', err.message, <IconX size={20} />);
 						});
 					break;
 				case 'slack':
 					setLoading(true);
-					// eslint-disable-next-line no-case-declarations
-					const redirect_origin = process.env.NEXT_PUBLIC_NGROK_URL || process.env.NEXT_PUBLIC_HOST_DOMAIN;
-					updateState({
+					updateSlackState({
 						state
 					})
 						.then(res => {
 							setLoading(false);
 							void router.push(
-								`https://slack.com/oauth/v2/authorize?scope=${SLACK_SCOPES}&client_id=${SLACK_CLIENT_ID}&redirect_uri=${redirect_origin}/integrations/slack&state=${state}`
+								`https://slack.com/oauth/v2/authorize?${querystring.stringify({
+									scope: SLACK_SCOPES,
+									client_id: SLACK_CLIENT_ID,
+									redirect_uri: `${redirect_origin}/integrations/slack`,
+									state: state
+								})}`
 							);
 						})
 						.catch(err => {

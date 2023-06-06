@@ -10,8 +10,8 @@ model User {
   stripe_customer_id     String?
   stripe_payment_method  String?
   stripe_subscription_id String?
-  slack_access_token     String   @default("")
   slack_auth_state_id    String   @default("")
-  zendesk_access_token   String   @default("")
+  zendesk_auth_state_id  String   @default("")
   slack                  Slack?
+  zendesk                Zendesk?
 }

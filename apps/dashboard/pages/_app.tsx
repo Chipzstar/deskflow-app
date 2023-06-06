@@ -10,6 +10,8 @@ import { Notifications } from '@mantine/notifications';
 import localFont from '@next/font/local';
 import { trpc } from '../utils/trpc';
 import '../styles/globals.css';
+import React from 'react';
+import Favicon from '../components/Favicon';
 
 const inter = localFont({
 	src: [
@@ -52,6 +54,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
 		<>
 			<Head>
 				<title>Deskflow</title>
+				<Favicon />
 			</Head>
 			<AuthProvider>
 				<MessageProvider>

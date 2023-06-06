@@ -7,6 +7,7 @@
 
 # dependencies
 node_modules
+yarn.lock
 
 # IDEs and editors
 /.idea
@@ -40,5 +41,5 @@ Thumbs.db
 
 # Next.js
 .next
-
+.env
 .vercel
