@@ -54,13 +54,13 @@ const zendeskRouter = createTRPCRouter({
 					redirect_uri: `${process.env.NGROK_URL || process.env.HOST_DOMAIN}/integrations/zendesk-guide`
 				});
 				console.table(result);
-				const zendesk = await ctx.prisma.zendesk.findUnique({
+				let zendesk = await ctx.prisma.zendesk.findUnique({
 					where: {
 						user_id: user.clerk_id
 					}
 				});
 				if (!zendesk) {
-					await ctx.prisma.zendesk.create({
+					zendesk = await ctx.prisma.zendesk.create({
 						data: {
 							user_id: user.clerk_id,
 							access_token: result.access_token,
@@ -68,7 +68,7 @@ const zendeskRouter = createTRPCRouter({
 						}
 					});
 				} else {
-					await ctx.prisma.zendesk.update({
+					zendesk = await ctx.prisma.zendesk.update({
 						where: {
 							user_id: user.clerk_id
 						},
@@ -78,6 +78,8 @@ const zendeskRouter = createTRPCRouter({
 						}
 					});
 				}
+				console.log('-----------------------------------------------');
+				console.log(zendesk);
 				return result;
 			} catch (err) {
 				console.error(err);

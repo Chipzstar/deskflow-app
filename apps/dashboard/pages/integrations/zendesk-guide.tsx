@@ -27,7 +27,12 @@ const ZendeskGuide = () => {
 			})
 				.then(res => {
 					axios
-						.post(`${process.env.NEXT_PUBLIC_API_HOST}/zendesk/knowledge-base`, res.data)
+						.post(
+							`${
+								process.env.NEXT_PUBLIC_NGROK_API_URL || process.env.NEXT_PUBLIC_API_HOST
+							}/zendesk/knowledge-base`,
+							res.data
+						)
 						.then(res => {
 							console.table(res.data);
 							notifySuccess(

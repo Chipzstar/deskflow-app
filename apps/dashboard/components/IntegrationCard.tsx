@@ -7,14 +7,16 @@ interface Props {
 	text?: string | null;
 	w?: number;
 	h?: number;
-	onSelect: (name: string) => void;
+	onModal?: () => void;
+	onIntegrate: (name: string) => void;
+	children?: JSX.Element | JSX.Element[] | null;
 }
 
-const IntegrationCard = ({ name, img = null, text = null, w = 130, h = 100, onSelect }: Props) => {
+const IntegrationCard = ({ name, img = null, text = null, w = 130, h = 100, onModal, onIntegrate }: Props) => {
 	return (
 		<div
 			className="bg-primary/[.1] border-primary relative cursor-pointer rounded-xl border-2 transition duration-300 ease-out hover:ease-in"
-			onClick={() => onSelect(name)}
+			onClick={() => (onModal ? onModal() : onIntegrate(name))}
 		>
 			<div
 				role="button"

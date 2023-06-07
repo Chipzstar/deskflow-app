@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
+import { LoadingOverlay, Modal, SimpleGrid, TextInput, Title, Text, rem, Box, Button, Stack } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import Page from '../../layout/Page';
 import IntegrationCard from '../../components/IntegrationCard';
@@ -8,14 +8,15 @@ import { trpc } from '../../utils/trpc';
 import * as querystring from 'querystring';
 import { IconX } from '@tabler/icons-react';
 import { notifyError } from '../../utils/functions';
-import { useLocalStorage } from '@mantine/hooks';
+import { getHotkeyHandler, useLocalStorage } from '@mantine/hooks';
 
 const Integrations = () => {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const { mutateAsync: updateSlackState } = trpc.user.updateSlackState.useMutation();
 	const { mutateAsync: updateZendeskState } = trpc.user.updateZendeskState.useMutation();
-	const [subdomain, setSubdomain] = useLocalStorage({ key: 'zendesk-subdomain', defaultValue: 'omnicentra' });
+	const [opened, setOpened] = useState(false);
+	const [subdomain, setSubdomain] = useLocalStorage({ key: 'zendesk-subdomain', defaultValue: '' });
 	const state = uuidv4();
 
 	const integrate = useCallback(
@@ -25,7 +26,6 @@ const Integrations = () => {
 			const SLACK_SCOPES = String(process.env.NEXT_PUBLIC_SLACK_SCOPES);
 			const ZENDESK_CLIENT_ID = String(process.env.NEXT_PUBLIC_ZENDESK_CLIENT_ID);
 			const ZENDESK_SCOPES = String(process.env.NEXT_PUBLIC_ZENDESK_SCOPES);
-			const ZENDESK_SUBDOMAIN = 'omnicentra';
 			switch (name) {
 				case 'zendesk-guide':
 					setLoading(true);
@@ -34,15 +34,13 @@ const Integrations = () => {
 					})
 						.then(() => {
 							void router.push(
-								`https://${ZENDESK_SUBDOMAIN}.zendesk.com/oauth/authorizations/new?${querystring.stringify(
-									{
-										response_type: 'code',
-										redirect_uri: `${redirect_origin}/integrations/zendesk-guide`,
-										client_id: ZENDESK_CLIENT_ID,
-										scope: ZENDESK_SCOPES,
-										state
-									}
-								)}`
+								`https://${subdomain}.zendesk.com/oauth/authorizations/new?${querystring.stringify({
+									response_type: 'code',
+									redirect_uri: `${redirect_origin}/integrations/zendesk-guide`,
+									client_id: ZENDESK_CLIENT_ID,
+									scope: ZENDESK_SCOPES,
+									state
+								})}`
 							);
 						})
 						.catch(err => {
@@ -76,22 +74,82 @@ const Integrations = () => {
 					return null;
 			}
 		},
-		[state]
+		[state, subdomain]
 	);
 
 	return (
 		<Page.Container extraClassNames="justify-around">
 			<LoadingOverlay overlayBlur={2} visible={loading} />
+			<Modal
+				opened={opened}
+				onClose={() => setOpened(false)}
+				centered
+				p="sm"
+				size="sm"
+				title="Enter your Zendesk subdomain"
+			>
+				<Stack spacing="xl">
+					<TextInput
+						withAsterisk
+						value={subdomain}
+						placeholder="example"
+						size="md"
+						onChange={e => setSubdomain(e.currentTarget.value)}
+						onKeyDown={getHotkeyHandler([['Enter', () => integrate('zendesk-guide')]])}
+						rightSection={
+							<Box
+								sx={theme => ({
+									height: '100%',
+									width: rem(125),
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'center',
+									borderStyle: 'solid',
+									borderWidth: 1,
+									borderColor: theme.colors.brand[5],
+									borderRadius: rem(2),
+									fontWeight: 500,
+									borderBottomLeftRadius: 0,
+									borderTopLeftRadius: 0,
+									backgroundColor: theme.colors.brand[1]
+								})}
+							>
+								<Text>.zendesk.com</Text>
+							</Box>
+						}
+						rightSectionWidth={125}
+					/>
+					<Button
+						disabled={!subdomain}
+						onClick={() => {
+							integrate('zendesk-guide');
+						}}
+					>
+						Submit
+					</Button>
+				</Stack>
+			</Modal>
 			<div className="flex flex-col space-y-4">
 				<Title weight="500" size={20}>
 					Knowledge Base
 				</Title>
 				<SimpleGrid cols={5}>
-					<IntegrationCard name="zendesk-guide" img="/static/images/zendesk-guide.svg" onSelect={integrate} />
-					<IntegrationCard name="confluence" img="/static/images/confluence.svg" onSelect={integrate} />
-					<IntegrationCard name="sharepoint" img="/static/images/sharepoint.svg" onSelect={integrate} />
-					<IntegrationCard name="drive" img="/static/images/drive.svg" w={80} h={80} onSelect={integrate} />
-					<IntegrationCard name="upload" text="Upload" onSelect={integrate} />
+					<IntegrationCard
+						name="zendesk-guide"
+						img="/static/images/zendesk-guide.svg"
+						onModal={() => setOpened(true)}
+						onIntegrate={integrate}
+					/>
+					<IntegrationCard name="confluence" img="/static/images/confluence.svg" onIntegrate={integrate} />
+					<IntegrationCard name="sharepoint" img="/static/images/sharepoint.svg" onIntegrate={integrate} />
+					<IntegrationCard
+						name="drive"
+						img="/static/images/drive.svg"
+						w={80}
+						h={80}
+						onIntegrate={integrate}
+					/>
+					<IntegrationCard name="upload" text="Upload" onIntegrate={integrate} />
 				</SimpleGrid>
 			</div>
 			<div className="flex flex-col space-y-4">
@@ -103,12 +161,16 @@ const Integrations = () => {
 						name="zendesk-support"
 						img="/static/images/zendesk-support.svg"
 						w={150}
-						onSelect={integrate}
+						onIntegrate={integrate}
 					/>
-					<IntegrationCard name="freshservice" img="/static/images/freshservice.svg" onSelect={integrate} />
-					<IntegrationCard name="servicenow" img="/static/images/servicenow.svg" onSelect={integrate} />
-					<IntegrationCard name="jira" img="/static/images/jira.svg" onSelect={integrate} />
-					<IntegrationCard name="happyfox" img="/static/images/happyfox.svg" onSelect={integrate} />
+					<IntegrationCard
+						name="freshservice"
+						img="/static/images/freshservice.svg"
+						onIntegrate={integrate}
+					/>
+					<IntegrationCard name="servicenow" img="/static/images/servicenow.svg" onIntegrate={integrate} />
+					<IntegrationCard name="jira" img="/static/images/jira.svg" onIntegrate={integrate} />
+					<IntegrationCard name="happyfox" img="/static/images/happyfox.svg" onIntegrate={integrate} />
 				</SimpleGrid>
 			</div>
 			<div className="flex flex-col space-y-4">
@@ -116,11 +178,17 @@ const Integrations = () => {
 					Chat
 				</Title>
 				<SimpleGrid cols={5}>
-					<IntegrationCard name="slack" img="/static/images/slack.svg" onSelect={integrate} />
-					<IntegrationCard name="gmail" img="/static/images/gmail.svg" w={70} h={70} onSelect={integrate} />
-					<IntegrationCard name="teams" img="/static/images/teams.svg" w={170} onSelect={integrate} />
-					<IntegrationCard name="zoom" img="/static/images/zoom.svg" onSelect={integrate} />
-					<IntegrationCard name="yammer" img="/static/images/yammer.svg" onSelect={integrate} />
+					<IntegrationCard name="slack" img="/static/images/slack.svg" onIntegrate={integrate} />
+					<IntegrationCard
+						name="gmail"
+						img="/static/images/gmail.svg"
+						w={70}
+						h={70}
+						onIntegrate={integrate}
+					/>
+					<IntegrationCard name="teams" img="/static/images/teams.svg" w={170} onIntegrate={integrate} />
+					<IntegrationCard name="zoom" img="/static/images/zoom.svg" onIntegrate={integrate} />
+					<IntegrationCard name="yammer" img="/static/images/yammer.svg" onIntegrate={integrate} />
 				</SimpleGrid>
 			</div>
 			<div className="flex flex-col space-y-4">
@@ -128,11 +196,11 @@ const Integrations = () => {
 					HRIS
 				</Title>
 				<SimpleGrid cols={5}>
-					<IntegrationCard name="rippling" img="/static/images/rippling.svg" onSelect={integrate} />
-					<IntegrationCard name="bamboohr" img="/static/images/bamboohr.svg" onSelect={integrate} />
-					<IntegrationCard name="zelt" img="/static/images/zelt.svg" onSelect={integrate} />
-					<IntegrationCard name="gusto" img="/static/images/gusto.svg" onSelect={integrate} />
-					<IntegrationCard name="deel" img="/static/images/deel.svg" onSelect={integrate} />
+					<IntegrationCard name="rippling" img="/static/images/rippling.svg" onIntegrate={integrate} />
+					<IntegrationCard name="bamboohr" img="/static/images/bamboohr.svg" onIntegrate={integrate} />
+					<IntegrationCard name="zelt" img="/static/images/zelt.svg" onIntegrate={integrate} />
+					<IntegrationCard name="gusto" img="/static/images/gusto.svg" onIntegrate={integrate} />
+					<IntegrationCard name="deel" img="/static/images/deel.svg" onIntegrate={integrate} />
 				</SimpleGrid>
 			</div>
 		</Page.Container>

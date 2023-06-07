@@ -16,8 +16,6 @@ const Slack = () => {
 		const searchParams = new URLSearchParams(router.asPath.split('?')[1]);
 		const hasCode = searchParams.has('code');
 		const hasState = searchParams.has('state');
-		console.log('State: ', hasState);
-		console.log('Code: ', hasCode);
 		if (hasCode && hasState) {
 			axios
 				.post(`${process.env.NEXT_PUBLIC_API_HOST}/slack/oauth/callback`, {
