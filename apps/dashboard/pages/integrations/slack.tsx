@@ -81,7 +81,7 @@ const Slack = () => {
 					{slack ? (
 						<Button
 							component="a"
-							href={`https://${slack?.team_name?.toLowerCase()}.slack.com`}
+							href={`https://${slack.team_name.toLowerCase()}.slack.com`}
 							target="_blank"
 							variant="outline"
 							size="lg"
