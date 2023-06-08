@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Page from '../../layout/Page';
-import { Chip, Group, Image, Space, Stack, Text, Title } from '@mantine/core';
-import { IconX } from '@tabler/icons-react';
+import { Button, Chip, Group, Image, Space, Stack, Text, Title } from '@mantine/core';
+import { IconExternalLink, IconX } from '@tabler/icons-react';
 import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -18,10 +18,13 @@ const Slack = () => {
 		const hasState = searchParams.has('state');
 		if (hasCode && hasState) {
 			axios
-				.post(`${process.env.NEXT_PUBLIC_API_HOST}/slack/oauth/callback`, {
-					code: searchParams.get('code'),
-					state: searchParams.get('state')
-				})
+				.post(
+					`${process.env.NEXT_PUBLIC_NGROK_API_URL || process.env.NEXT_PUBLIC_API_HOST}/slack/oauth/callback`,
+					{
+						code: searchParams.get('code'),
+						state: searchParams.get('state')
+					}
+				)
 				.then(r => console.log(r))
 				.catch(e => {
 					console.log(e);
@@ -75,7 +78,19 @@ const Slack = () => {
 				</Stack>
 				<Stack align="center">
 					<Image src="/static/images/alfred.svg" height={100} width={100} alt="Alfred logo" />
-					<AddToSlack />
+					{slack ? (
+						<Button
+							component="a"
+							href=""
+							variant="outline"
+							size="lg"
+							leftIcon={<IconExternalLink size="1rem" />}
+						>
+							Open in Slack App
+						</Button>
+					) : (
+						<AddToSlack />
+					)}
 				</Stack>
 			</Stack>
 		</Page.Container>

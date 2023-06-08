@@ -12,6 +12,7 @@ import { getHotkeyHandler, useLocalStorage } from '@mantine/hooks';
 
 const Integrations = () => {
 	const router = useRouter();
+	const { data: user } = trpc.user.getUser.useQuery();
 	const [loading, setLoading] = useState(false);
 	const { mutateAsync: updateSlackState } = trpc.user.updateSlackState.useMutation();
 	const { mutateAsync: updateZendeskState } = trpc.user.updateZendeskState.useMutation();
@@ -139,6 +140,7 @@ const Integrations = () => {
 						img="/static/images/zendesk-guide.svg"
 						onModal={() => setOpened(true)}
 						onIntegrate={integrate}
+						isIntegrated={Boolean(user?.zendesk)}
 					/>
 					<IntegrationCard name="confluence" img="/static/images/confluence.svg" onIntegrate={integrate} />
 					<IntegrationCard name="sharepoint" img="/static/images/sharepoint.svg" onIntegrate={integrate} />
@@ -178,7 +180,12 @@ const Integrations = () => {
 					Chat
 				</Title>
 				<SimpleGrid cols={5}>
-					<IntegrationCard name="slack" img="/static/images/slack.svg" onIntegrate={integrate} />
+					<IntegrationCard
+						name="slack"
+						img="/static/images/slack.svg"
+						onIntegrate={integrate}
+						isIntegrated={Boolean(user?.slack)}
+					/>
 					<IntegrationCard
 						name="gmail"
 						img="/static/images/gmail.svg"

@@ -7,7 +7,11 @@ const userRouter = createTRPCRouter({
 		try {
 			return await ctx.prisma.user.findUnique({
 				where: {
-					id: 0
+					clerk_id: 'user_2QC5J2hrNzky9c8PHta8z57No3o'
+				},
+				include: {
+					slack: true,
+					zendesk: true
 				}
 			});
 		} catch (err) {

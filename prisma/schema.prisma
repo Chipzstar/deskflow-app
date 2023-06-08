@@ -47,13 +47,15 @@ model User {
 }
 
 model Zendesk {
-  id            Int    @id @default(autoincrement())
-  user_id       String @unique
-  user          User   @relation(fields: [user_id], references: [clerk_id], onDelete: Cascade)
+  id            Int     @id @default(autoincrement())
+  user_id       String  @unique
+  user          User    @relation(fields: [user_id], references: [clerk_id], onDelete: Cascade)
   access_token  String
-  subdomain     String @unique
-  account_email String @default("")
-  account_id    String @default("")
+  subdomain     String  @unique
+  account_email String  @default("")
+  account_id    String  @default("")
+  guide         Boolean @default(false)
+  support       Boolean @default(false)
 
   @@index([user_id, subdomain])
 }

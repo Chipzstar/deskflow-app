@@ -1,5 +1,7 @@
 import React from 'react';
 import { Image, Text } from '@mantine/core';
+import { useRouter } from 'next/router';
+import { IconCircleCheck, IconCirclePlus } from '@tabler/icons-react';
 
 interface Props {
 	name: string;
@@ -9,14 +11,27 @@ interface Props {
 	h?: number;
 	onModal?: () => void;
 	onIntegrate: (name: string) => void;
+	isIntegrated?: boolean;
 	children?: JSX.Element | JSX.Element[] | null;
 }
 
-const IntegrationCard = ({ name, img = null, text = null, w = 130, h = 100, onModal, onIntegrate }: Props) => {
+const IntegrationCard = ({
+	name,
+	img = null,
+	text = null,
+	w = 130,
+	h = 100,
+	onModal,
+	onIntegrate,
+	isIntegrated = false
+}: Props) => {
+	const router = useRouter();
 	return (
 		<div
 			className="bg-primary/[.1] border-primary relative cursor-pointer rounded-xl border-2 transition duration-300 ease-out hover:ease-in"
-			onClick={() => (onModal ? onModal() : onIntegrate(name))}
+			onClick={() => {
+				isIntegrated ? router.push(`/integrations/${name}`) : onModal ? onModal() : onIntegrate(name);
+			}}
 		>
 			<div
 				role="button"
@@ -26,7 +41,11 @@ const IntegrationCard = ({ name, img = null, text = null, w = 130, h = 100, onMo
 					top: 5
 				}}
 			>
-				<Image src="/static/images/add.svg" width={20} height={20} />
+				{isIntegrated ? (
+					<IconCircleCheck color="#18C31A" size={25} stroke={1.5} />
+				) : (
+					<IconCirclePlus color="#2742F5" size={25} stroke={1.5} />
+				)}
 			</div>
 			<div className="flex h-full items-center justify-center">
 				{img ? (

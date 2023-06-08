@@ -24,11 +24,6 @@ export function Chat() {
 	const { history, setHistory } = useContext(OpenAIContext);
 	const [loading, setLoading] = useState(false);
 	const { width, height } = useViewportSize();
-	/*
-	 * Replace the elements below with your own.
-	 *
-	 * Note: The corresponding styles are in the ./index.css file.
-	 */
 
 	const form = useForm<FormValues>({
 		initialValues: {
@@ -44,6 +39,7 @@ export function Chat() {
 				if (!user?.id) {
 					setUser({
 						id: uuid,
+						email: 'chipzstar.dev@googlemail.com',
 						name: values.name,
 						authToken: uuid
 					});
@@ -55,11 +51,17 @@ export function Chat() {
 					author: values.name,
 					message: values.query
 				});
-				const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/api/v1/generate-chat-response`, {
-					query: values.query,
-					name: values.name,
-					history: history
-				});
+				const response = await axios.post(
+					`${
+						process.env.NEXT_PUBLIC_NGROK_API_URL || process.env.NEXT_PUBLIC_API_HOST
+					}/api/v1/generate-chat-response`,
+					{
+						query: values.query,
+						name: values.name,
+						email: user?.email || 'chipzstar.dev@googlemail.com',
+						history: history
+					}
+				);
 				const { reply, messages: openai_messages } = response.data as OpenAIResponse;
 				addMessage({
 					id: nanoid(24),

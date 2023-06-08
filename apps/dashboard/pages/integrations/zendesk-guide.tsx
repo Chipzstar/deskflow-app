@@ -1,25 +1,25 @@
 import React, { useEffect } from 'react';
-import { Chip, Group, Image, Space, Stack, Text, Title } from '@mantine/core';
+import { Button, Chip, Group, Image, Space, Stack, Text, Title } from '@mantine/core';
 import Page from '../../layout/Page';
 import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { notifyError, notifySuccess } from '../../utils/functions';
-import { IconCheck, IconX } from '@tabler/icons-react';
+import { IconCheck, IconExternalLink, IconX } from '@tabler/icons-react';
 import { useLocalStorage } from '@mantine/hooks';
 
 const ZendeskGuide = () => {
 	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery({ id: 'user_2QC5J2hrNzky9c8PHta8z57No3o' });
 	const { mutateAsync: zendeskExchangeToken } = trpc.zendesk.exchangeToken.useMutation();
 	const router = useRouter();
-	const [subdomain, setSubdomain] = useLocalStorage({ key: 'zendesk-subdomain', defaultValue: 'omnicentra' });
+	const [subdomain, setSubdomain] = useLocalStorage({ key: 'zendesk-subdomain', defaultValue: '' });
 
 	useEffect(() => {
 		const searchParams = new URLSearchParams(router.asPath.split('?')[1]);
 		const hasCode = searchParams.has('code');
 		const hasState = searchParams.has('state');
 		const hasError = searchParams.has('error_description');
-		if (hasCode && hasState) {
+		if (subdomain && hasCode && hasState) {
 			zendeskExchangeToken({
 				subdomain,
 				state: searchParams.get('state') ?? '',
@@ -31,7 +31,7 @@ const ZendeskGuide = () => {
 							`${
 								process.env.NEXT_PUBLIC_NGROK_API_URL || process.env.NEXT_PUBLIC_API_HOST
 							}/zendesk/knowledge-base`,
-							res.data
+							{ token: res.access_token, subdomain }
 						)
 						.then(res => {
 							console.table(res.data);
@@ -111,6 +111,15 @@ const ZendeskGuide = () => {
 						</Text>
 					</Group>
 				</Stack>
+				<Button
+					component="a"
+					href={`https://${zendesk?.subdomain}.zendesk.com/hc/en-gb`}
+					target="_blank"
+					variant="outline"
+					leftIcon={<IconExternalLink size="0.9rem" />}
+				>
+					Visit Knowledge Base
+				</Button>
 			</Stack>
 		</Page.Container>
 	);
