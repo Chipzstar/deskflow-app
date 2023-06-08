@@ -81,12 +81,13 @@ const Slack = () => {
 					{slack ? (
 						<Button
 							component="a"
-							href=""
+							href={`https://${slack?.team_name?.toLowerCase()}.slack.com`}
+							target="_blank"
 							variant="outline"
 							size="lg"
 							leftIcon={<IconExternalLink size="1rem" />}
 						>
-							Open in Slack App
+							Open Slack App
 						</Button>
 					) : (
 						<AddToSlack />
