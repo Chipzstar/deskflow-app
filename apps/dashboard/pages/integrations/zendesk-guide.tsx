@@ -7,6 +7,7 @@ import axios from 'axios';
 import { notifyError, notifySuccess } from '../../utils/functions';
 import { IconCheck, IconExternalLink, IconX } from '@tabler/icons-react';
 import { useLocalStorage } from '@mantine/hooks';
+import IntegrationStatus from '../../components/IntegrationStatus';
 
 const ZendeskGuide = () => {
 	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery({ id: 'user_2QC5J2hrNzky9c8PHta8z57No3o' });
@@ -21,6 +22,7 @@ const ZendeskGuide = () => {
 		const hasError = searchParams.has('error_description');
 		if (subdomain && hasCode && hasState) {
 			zendeskExchangeToken({
+				type: 'guide',
 				subdomain,
 				state: searchParams.get('state') ?? '',
 				code: searchParams.get('code') ?? ''
@@ -69,18 +71,7 @@ const ZendeskGuide = () => {
 
 	return (
 		<Page.Container>
-			<Chip
-				w={100}
-				size="md"
-				defaultChecked
-				color="green"
-				sx={theme => ({
-					position: 'absolute',
-					right: 20
-				})}
-			>
-				Active
-			</Chip>
+			<IntegrationStatus isActive={!!zendesk} />
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Zendesk Guide Integration</Title>
 				<Image src="/static/images/zendesk-logo.svg" fit="contain" height={150} alt="Zendesk Logo" />

@@ -27,7 +27,8 @@ const zendeskRouter = createTRPCRouter({
 			z.object({
 				code: z.string(),
 				state: z.string(),
-				subdomain: z.string()
+				subdomain: z.string(),
+				type: z.union([z.literal('guide'), z.literal('support')])
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -53,7 +54,8 @@ const zendeskRouter = createTRPCRouter({
 					scope,
 					redirect_uri: `${process.env.NGROK_URL || process.env.HOST_DOMAIN}/integrations/zendesk-guide`
 				});
-				console.table(result);
+				console.log('-----------------------------------------------');
+				console.log(result);
 				let zendesk = await ctx.prisma.zendesk.findUnique({
 					where: {
 						user_id: user.clerk_id
@@ -64,7 +66,8 @@ const zendeskRouter = createTRPCRouter({
 						data: {
 							user_id: user.clerk_id,
 							access_token: result.access_token,
-							subdomain: input.subdomain
+							subdomain: input.subdomain,
+							[input.type]: true
 						}
 					});
 				} else {
@@ -74,7 +77,8 @@ const zendeskRouter = createTRPCRouter({
 						},
 						data: {
 							access_token: result.access_token,
-							subdomain: input.subdomain
+							subdomain: input.subdomain,
+							[input.type]: true
 						}
 					});
 				}

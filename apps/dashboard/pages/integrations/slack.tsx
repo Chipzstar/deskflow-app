@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { notifyError } from '../../utils/functions';
 import AddToSlack from '../../components/AddToSlack';
+import IntegrationStatus from '../../components/IntegrationStatus';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
@@ -35,18 +36,7 @@ const Slack = () => {
 
 	return (
 		<Page.Container>
-			<Chip
-				w={100}
-				size="md"
-				defaultChecked
-				color="green"
-				sx={theme => ({
-					position: 'absolute',
-					right: 20
-				})}
-			>
-				Active
-			</Chip>
+			<IntegrationStatus isActive={!!slack} />
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Slack Integration</Title>
 				<Space h="md" />
