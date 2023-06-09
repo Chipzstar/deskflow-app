@@ -8,10 +8,12 @@ import axios from 'axios';
 import { notifyError } from '../../utils/functions';
 import AddToSlack from '../../components/AddToSlack';
 import IntegrationStatus from '../../components/IntegrationStatus';
+import { v4 as uuidv4 } from 'uuid';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
 	const router = useRouter();
+	const state = uuidv4();
 
 	useEffect(() => {
 		const searchParams = new URLSearchParams(router.asPath.split('?')[1]);
@@ -80,7 +82,7 @@ const Slack = () => {
 							Open Slack App
 						</Button>
 					) : (
-						<AddToSlack />
+						<AddToSlack state={state} />
 					)}
 				</Stack>
 			</Stack>
