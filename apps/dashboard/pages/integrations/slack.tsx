@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Page from '../../layout/Page';
 import { Button, Chip, Group, Image, Space, Stack, Text, Title } from '@mantine/core';
-import { IconCheck, IconExternalLink, IconX } from '@tabler/icons-react';
+import { IconCheck, IconDownload, IconExternalLink, IconX } from '@tabler/icons-react';
 import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -9,9 +9,11 @@ import { notifyError, notifySuccess } from '../../utils/functions';
 import AddToSlack from '../../components/AddToSlack';
 import IntegrationStatus from '../../components/IntegrationStatus';
 import { v4 as uuidv4 } from 'uuid';
+import querystring from 'querystring';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
+	const { mutate: updateState } = trpc.user.updateSlackState.useMutation();
 	const router = useRouter();
 	const state = uuidv4();
 
@@ -43,12 +45,55 @@ const Slack = () => {
 		}
 	}, [router.asPath]);
 
+	const reinstallSlack = useCallback(() => {
+		updateState({ state });
+		void router.push(
+			`https://slack.com/oauth/v2/authorize?${querystring.stringify({
+				scope: String(process.env.NEXT_PUBLIC_SLACK_SCOPES),
+				client_id: String(process.env.NEXT_PUBLIC_SLACK_CLIENT_ID),
+				redirect_uri: `${
+					process.env.NEXT_PUBLIC_NGROK_URL || process.env.NEXT_PUBLIC_HOST_DOMAIN
+				}/integrations/slack`,
+				state: state
+			})}`
+		);
+	}, [state]);
+
 	return (
 		<Page.Container>
 			<IntegrationStatus isActive={!!slack} />
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Slack Integration</Title>
-				<Space h="md" />
+				<Image src="/static/images/alfred.svg" height={100} width={100} alt="Alfred logo" />
+				<Stack>
+					{slack ? (
+						<Group spacing="xl">
+							<Button
+								w={250}
+								component="a"
+								href={`https://${slack.team_name.toLowerCase()}.slack.com`}
+								target="_blank"
+								variant="outline"
+								size="lg"
+								leftIcon={<IconExternalLink size="1rem" />}
+							>
+								Open Slack App
+							</Button>
+							<Button
+								w={250}
+								onClick={() => reinstallSlack()}
+								variant="outline"
+								size="lg"
+								color="orange"
+								leftIcon={<IconDownload size="1.2rem" />}
+							>
+								Reinstall
+							</Button>
+						</Group>
+					) : (
+						<AddToSlack state={state} />
+					)}
+				</Stack>
 				<Stack align="center" spacing="xl">
 					<Group w={500} grow align="center" position="apart">
 						<Text weight={600} size="lg">
@@ -74,23 +119,6 @@ const Slack = () => {
 							{slack?.team_id}
 						</Text>
 					</Group>
-				</Stack>
-				<Stack align="center">
-					<Image src="/static/images/alfred.svg" height={100} width={100} alt="Alfred logo" />
-					{slack ? (
-						<Button
-							component="a"
-							href={`https://${slack.team_name.toLowerCase()}.slack.com`}
-							target="_blank"
-							variant="outline"
-							size="lg"
-							leftIcon={<IconExternalLink size="1rem" />}
-						>
-							Open Slack App
-						</Button>
-					) : (
-						<AddToSlack state={state} />
-					)}
 				</Stack>
 			</Stack>
 		</Page.Container>

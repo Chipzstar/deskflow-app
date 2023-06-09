@@ -71,6 +71,28 @@ const Integrations = () => {
 							setLoading(false);
 						});
 					break;
+				case 'zendesk-support':
+					setLoading(true);
+					updateZendeskState({
+						state
+					})
+						.then(() => {
+							void router.push(
+								`https://${subdomain}.zendesk.com/oauth/authorizations/new?${querystring.stringify({
+									response_type: 'code',
+									redirect_uri: `${redirect_origin}/integrations/zendesk-support`,
+									client_id: ZENDESK_CLIENT_ID,
+									scope: ZENDESK_SCOPES,
+									state
+								})}`
+							);
+						})
+						.catch(err => {
+							console.error(err);
+							setLoading(false);
+							notifyError('zendesk-authorization-failed', err.message, <IconX size={20} />);
+						});
+					break;
 				default:
 					return null;
 			}
@@ -163,7 +185,9 @@ const Integrations = () => {
 						name="zendesk-support"
 						img="/static/images/zendesk-support.svg"
 						w={150}
+						onModal={() => setOpened(true)}
 						onIntegrate={integrate}
+						isIntegrated={Boolean(user?.zendesk)}
 					/>
 					<IntegrationCard
 						name="freshservice"
