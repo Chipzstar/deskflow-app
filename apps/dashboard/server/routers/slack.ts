@@ -1,14 +1,14 @@
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { WebClient } from '@slack/web-api';
 
 const slackRouter = createTRPCRouter({
-	getSlackInfo: publicProcedure.query(async ({ ctx }) => {
+	getSlackInfo: protectedProcedure.query(async ({ ctx }) => {
 		try {
 			const slack = await ctx.prisma.slack.findUnique({
 				where: {
-					user_id: 'user_2QC5J2hrNzky9c8PHta8z57No3o'
+					user_id: ctx.auth.userId
 				}
 			});
 			if (!slack) {
