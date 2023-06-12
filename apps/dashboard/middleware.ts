@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { PATHS } from './utils/constants';
 
 export default authMiddleware({
-	debug: true,
+	debug: process.env.NODE_ENV === 'development',
 	afterAuth(auth, req, evt) {
 		// handle users who aren't authenticated
 		console.log('Is Public Route:', auth.isPublicRoute);

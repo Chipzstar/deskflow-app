@@ -1,4 +1,3 @@
-import { PhoneNumberUtil } from 'google-libphonenumber';
 import * as process from 'process';
 
 export const IS_DEVELOPMENT_MODE = process.env.NODE_ENV === 'development';
@@ -12,7 +11,7 @@ export const requirements = [
 	{ re: /[$&+,:;=?@#|'<>.^*()%!-]/, label: 'Includes special symbol' }
 ];
 
-export const phoneUtil = PhoneNumberUtil.getInstance();
+// export const phoneUtil = PhoneNumberUtil.getInstance();
 export const ONE_GB = 1073741824; // in bytes units
 export const FIVE_MB = 5242880; // in bytes units
 export const TEN_MB = 2 * FIVE_MB; // in bytes units
