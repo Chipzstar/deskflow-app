@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import Page from '../../layout/Page';
-import { Button, Chip, Group, Image, Space, Stack, Text, Title } from '@mantine/core';
+import { Button, Group, Image, Stack, Text, Title } from '@mantine/core';
 import { IconCheck, IconDownload, IconExternalLink, IconX } from '@tabler/icons-react';
 import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';

@@ -1,27 +1,22 @@
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import axios from 'axios';
 
 const zendeskRouter = createTRPCRouter({
-	getZendeskInfo: publicProcedure
-		.input(
-			z.object({
-				id: z.string()
-			})
-		)
-		.query(async ({ ctx, input }) => {
-			try {
-				return await ctx.prisma.zendesk.findUnique({
-					where: {
-						user_id: input.id
-					}
-				});
-			} catch (err) {
-				console.error(err);
-				throw new TRPCError({ code: 'NOT_FOUND', message: 'Zendesk not found' });
-			}
-		}),
+	getZendeskInfo: protectedProcedure.query(async ({ ctx, input }) => {
+		try {
+			const user_id = ctx.auth.userId;
+			return await ctx.prisma.zendesk.findUnique({
+				where: {
+					user_id
+				}
+			});
+		} catch (err) {
+			console.error(err);
+			throw new TRPCError({ code: 'NOT_FOUND', message: 'Zendesk not found' });
+		}
+	}),
 	exchangeToken: publicProcedure
 		.input(
 			z.object({

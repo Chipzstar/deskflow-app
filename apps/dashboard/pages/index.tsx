@@ -1,15 +1,15 @@
 import React from 'react';
 import Page from '../layout/Page';
 import { Stack, Title, Text, Group, Image, Space } from '@mantine/core';
-import { trpc } from '../utils/trpc';
+import { useUser } from '@clerk/nextjs';
 
 export function Index() {
-	const { data: user } = trpc.user.getUser.useQuery();
+	const { user } = useUser();
 	return (
 		<Page.Container>
 			<Stack spacing="xl">
 				<Title weight={500} size={32}>
-					Welcome {user?.firstname}
+					Welcome {user?.firstName}
 				</Title>
 				<Text>
 					Overall, <strong>120 employees</strong> raised <strong>156 issues</strong> this past week

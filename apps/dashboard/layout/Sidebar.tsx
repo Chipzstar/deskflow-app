@@ -4,6 +4,7 @@ import { IconCode, IconHome, IconLogout, IconMessage } from '@tabler/icons-react
 import { useRouter } from 'next/router';
 import { DEFAULT_HEADER_HEIGHT, PATHS } from '../utils/constants';
 import { useViewportSize } from '@mantine/hooks';
+import { useClerk } from '@clerk/nextjs';
 
 const useStyles = createStyles((theme, _params) => {
 	return {
@@ -31,6 +32,7 @@ const useStyles = createStyles((theme, _params) => {
 			padding: theme.spacing.md,
 			color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[7],
 			borderRadius: theme.radius.sm,
+			cursor: 'pointer',
 			fontWeight: 500,
 
 			'&:hover': {
@@ -73,6 +75,7 @@ const useStyles = createStyles((theme, _params) => {
 const Sidebar = ({ opened, setOpened }) => {
 	const { width } = useViewportSize();
 	const router = useRouter();
+	const { signOut } = useClerk();
 
 	const tabs = {
 		general: [
@@ -115,7 +118,7 @@ const Sidebar = ({ opened, setOpened }) => {
 				opened && setOpened(false);
 			}}
 		>
-			<div className="flex justify-center w-full h-full">
+			<div className="flex h-full w-full justify-center">
 				<item.icon className={classes.linkIcon} stroke={1.5} />
 			</div>
 		</div>
@@ -127,7 +130,7 @@ const Sidebar = ({ opened, setOpened }) => {
 				{links}
 			</Navbar.Section>
 			<Navbar.Section className={classes.footer}>
-				<div data-cy="logout-button" role="button" className={classes.link}>
+				<div data-cy="logout-button" className={classes.link} onClick={() => signOut()}>
 					<IconLogout className={classes.linkIcon} stroke={1.5} />
 				</div>
 			</Navbar.Section>

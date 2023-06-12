@@ -2,7 +2,6 @@ import { createEmotionCache, MantineProvider } from '@mantine/core';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import Layout from '../layout/Layout';
-import { AuthProvider } from '../context/AuthContext';
 import { MessageProvider } from '../context/MessageContext';
 import { OpenAIMessageProvider } from '../context/OpenAIContext';
 import RouterTransition from '../layout/RouterTransition';
@@ -12,6 +11,7 @@ import { trpc } from '../utils/trpc';
 import '../styles/globals.css';
 import React from 'react';
 import Favicon from '../components/Favicon';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = localFont({
 	src: [
@@ -56,7 +56,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
 				<title>Deskflow</title>
 				<Favicon />
 			</Head>
-			<AuthProvider>
+			<ClerkProvider>
 				<MessageProvider>
 					<OpenAIMessageProvider>
 						<MantineProvider
@@ -120,7 +120,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
 						</MantineProvider>
 					</OpenAIMessageProvider>
 				</MessageProvider>
-			</AuthProvider>
+			</ClerkProvider>
 		</>
 	);
 }
