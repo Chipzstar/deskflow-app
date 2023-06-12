@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import { useLocalStorage } from '@mantine/hooks';
 
 const ZendeskSupport = () => {
-	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery({ id: 'user_2QC5J2hrNzky9c8PHta8z57No3o' });
+	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery();
 	const { mutateAsync: zendeskExchangeToken } = trpc.zendesk.exchangeToken.useMutation();
 	const router = useRouter();
 	const [subdomain, setSubdomain] = useLocalStorage({ key: 'zendesk-subdomain', defaultValue: '' });
