@@ -1,33 +1,31 @@
-import { ActionIcon, Button, Container, Group, Stack, Textarea, TextInput, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Button, Group, Stack, Textarea, TextInput, useMantineTheme } from '@mantine/core';
 import React, { useCallback, useContext, useState } from 'react';
 import { useId, useViewportSize } from '@mantine/hooks';
 import axios from 'axios';
 import MessageList from '../components/MessageList';
-import { AuthContext } from '../context/AuthContext';
 import { nanoid } from 'nanoid';
 import { MessageContext } from '../context/MessageContext';
 import { IconSend } from '@tabler/icons-react';
 import { OpenAIContext, OpenAIResponse } from '../context/OpenAIContext';
 import { useForm } from '@mantine/form';
 import Page from '../layout/Page';
+import { useUser } from '@clerk/nextjs';
 
 interface FormValues {
-	name: string;
 	query: string;
 }
 
 export function Chat() {
 	const theme = useMantineTheme();
 	const uuid = useId();
-	const { user, setUser } = useContext(AuthContext);
 	const { messages, addMessage, clearChat } = useContext(MessageContext); // Retrieve messages from database
 	const { history, setHistory } = useContext(OpenAIContext);
 	const [loading, setLoading] = useState(false);
 	const { width, height } = useViewportSize();
+	const { user } = useUser();
 
 	const form = useForm<FormValues>({
 		initialValues: {
-			name: '',
 			query: ''
 		}
 	});
@@ -36,19 +34,12 @@ export function Chat() {
 		async (values: FormValues) => {
 			setLoading(true);
 			try {
-				if (!user?.id) {
-					setUser({
-						id: uuid,
-						email: 'chipzstar.dev@googlemail.com',
-						name: values.name,
-						authToken: uuid
-					});
-				}
+				if (!user) throw new Error('User not logged in');
 				form.setFieldValue('query', '');
 				addMessage({
 					id: nanoid(24),
-					user_id: uuid,
-					author: values.name,
+					user_id: user.id,
+					author: String(user.firstName),
 					message: values.query
 				});
 				const response = await axios.post(
@@ -57,8 +48,8 @@ export function Chat() {
 					}/api/v1/generate-chat-response`,
 					{
 						query: values.query,
-						name: values.name,
-						email: user?.email || 'chipzstar.dev@googlemail.com',
+						name: String(user.firstName),
+						email: user.emailAddresses[0].emailAddress || 'chipzstar.dev@googlemail.com',
 						history: history
 					}
 				);
@@ -114,25 +105,6 @@ export function Chat() {
 							</ActionIcon>
 						}
 					/>
-					<Group align="end" position="apart">
-						<TextInput
-							w={300}
-							label="Name"
-							placeholder="Enter your name"
-							{...form.getInputProps('name')}
-							required
-						/>
-						<Button
-							color="red"
-							w={300}
-							onClick={() => {
-								setHistory([]);
-								clearChat();
-							}}
-						>
-							Restart Chat
-						</Button>
-					</Group>
 				</form>
 			</Stack>
 		</Page.Container>
