@@ -1,13 +1,13 @@
 import React from 'react';
-import { CreateOrganization, SignUp } from '@clerk/nextjs';
+import { CreateOrganization } from '@clerk/nextjs';
 import Page from '../layout/Page';
 
-const Signup = () => {
+const CreateOrganisation = () => {
 	return (
 		<Page.Container extraClassNames="flex justify-center items-center">
-			<SignUp />
+			<CreateOrganization />
 		</Page.Container>
 	);
 };
 
-export default Signup;
+export default CreateOrganisation;

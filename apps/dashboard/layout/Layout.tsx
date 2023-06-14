@@ -3,6 +3,7 @@ import { AppShell, Burger, Header, Image, MediaQuery, Text } from '@mantine/core
 import { useRouter } from 'next/router';
 import { AUTH_ROUTES, DEFAULT_HEADER_HEIGHT, PATHS } from '../utils/constants';
 import Sidebar from './Sidebar';
+import { UserButton } from '@clerk/nextjs';
 
 const Layout = ({ children }) => {
 	const router = useRouter();
@@ -18,9 +19,9 @@ const Layout = ({ children }) => {
 				header={
 					isLoggedIn ? (
 						<Header height={{ base: 50, sm: DEFAULT_HEADER_HEIGHT }} p="md">
-							<div className="flex h-full items-center">
+							<div className="flex h-full items-center justify-between">
 								<div
-									className="flex justify-center space-x-2"
+									className="flex grow space-x-2"
 									role="button"
 									onClick={() => router.push(PATHS.HOME)}
 								>
@@ -28,6 +29,18 @@ const Layout = ({ children }) => {
 									<Text size={28} weight="normal">
 										deskflow
 									</Text>
+								</div>
+								<div className="flex justify-center space-x-2" role="button">
+									<UserButton
+										showName={true}
+										appearance={{
+											userProfile: {
+												elements: {
+													breadcrumbs: 'bg-slate-500'
+												}
+											}
+										}}
+									/>
 								</div>
 								<MediaQuery largerThan="sm" styles={{ display: 'none' }}>
 									<Burger

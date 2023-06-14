@@ -13,7 +13,7 @@ export default authMiddleware({
 			return NextResponse.redirect(signInUrl);
 		}
 	},
-	publicRoutes: ['/api/:clerk*', '/api/hello', '/login', '/signup']
+	publicRoutes: ['/api/:clerk*', '/api/hello', '/login', '/signup', '/create-organisation']
 });
 
 export const config = {

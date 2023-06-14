@@ -30,8 +30,9 @@ export const PATHS = {
 	HOME: '/',
 	SIGNUP: '/signup',
 	LOGIN: '/login',
+	CREATE_ORGANISATION: '/create-organisation',
 	INTEGRATIONS: '/integrations',
 	CHAT: '/chat'
 };
 
-export const AUTH_ROUTES = [PATHS.LOGIN, PATHS.SIGNUP];
+export const AUTH_ROUTES = [PATHS.LOGIN, PATHS.SIGNUP, PATHS.CREATE_ORGANISATION];

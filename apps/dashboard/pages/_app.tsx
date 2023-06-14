@@ -56,7 +56,13 @@ function CustomApp({ Component, pageProps }: AppProps) {
 				<title>Deskflow</title>
 				<Favicon />
 			</Head>
-			<ClerkProvider>
+			<ClerkProvider
+				appearance={{
+					layout: {
+						socialButtonsVariant: 'iconButton'
+					}
+				}}
+			>
 				<MessageProvider>
 					<OpenAIMessageProvider>
 						<MantineProvider
