@@ -5,8 +5,8 @@ import { log } from 'next-axiom';
 import { buffer } from 'micro';
 import { Webhook, WebhookRequiredHeaders } from 'svix';
 import { IncomingHttpHeaders } from 'http';
-import { createNewUser, deleteUser, updateUser } from '../../../server/handlers/clerk-webhook';
-import { ClerkEvent } from '../../../utils/types';
+import { createNewUser, createOrganisation, deleteUser, updateUser } from '../../../server/handlers/clerk-webhook';
+import type { WebhookEvent } from '@clerk/clerk-sdk-node';
 
 // Disable the bodyParser so we can access the raw
 // request body for verification.
@@ -32,8 +32,8 @@ export default async function handler(req: NextApiRequestWithSvixRequiredHeaders
 			log.info(payload);
 			const headers = req.headers;
 			const wh = new Webhook(webhookSecret);
-			let event: ClerkEvent | null = null;
-			event = wh.verify(payload, headers) as ClerkEvent;
+			let event: WebhookEvent | null = null;
+			event = wh.verify(payload, headers) as WebhookEvent;
 
 			// Handle the webhook
 			switch (event.type) {
@@ -45,6 +45,9 @@ export default async function handler(req: NextApiRequestWithSvixRequiredHeaders
 					break;
 				case 'user.deleted':
 					await deleteUser({ event, prisma });
+					break;
+				case 'organization.created':
+					await createOrganisation({ event, prisma });
 					break;
 				default:
 					console.log(`Unhandled event type ${event.type}`);
