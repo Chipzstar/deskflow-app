@@ -7,6 +7,7 @@ import { Webhook, WebhookRequiredHeaders } from 'svix';
 import { IncomingHttpHeaders } from 'http';
 import { createNewUser, createOrganisation, deleteUser, updateUser } from '../../../server/handlers/clerk-webhook';
 import type { WebhookEvent } from '@clerk/clerk-sdk-node';
+import Prisma from '@prisma/client';
 
 // Disable the bodyParser so we can access the raw
 // request body for verification.
@@ -27,32 +28,31 @@ export default async function handler(req: NextApiRequestWithSvixRequiredHeaders
 			// See https://docs.svix.com/receiving/verifying-payloads/how
 			// Validate the incoming data and return 400 if it's not what is expected
 			console.log('************************************************');
-			console.log(req.body);
+			let data: Prisma.User | Prisma.Organization | null = null;
 			const payload = (await buffer(req)).toString();
 			log.info(payload);
 			const headers = req.headers;
 			const wh = new Webhook(webhookSecret);
 			let event: WebhookEvent | null = null;
 			event = wh.verify(payload, headers) as WebhookEvent;
-
 			// Handle the webhook
 			switch (event.type) {
 				case 'user.created':
-					await createNewUser({ event, prisma });
+					data = await createNewUser({ event, prisma });
 					break;
 				case 'user.updated':
-					await updateUser({ event, prisma });
+					data = await updateUser({ event, prisma });
 					break;
 				case 'user.deleted':
-					await deleteUser({ event, prisma });
+					data = await deleteUser({ event, prisma });
 					break;
 				case 'organization.created':
-					await createOrganisation({ event, prisma });
+					data = await createOrganisation({ event, prisma });
 					break;
 				default:
 					console.log(`Unhandled event type ${event.type}`);
 			}
-			return res.status(200).json({ received: true, message: `Webhook received!` });
+			return res.status(200).json({ received: true, message: `Webhook received!`, data });
 		} catch (error) {
 			// Catch and log errors - return a 500 with a message
 			console.error(error);

@@ -70,7 +70,7 @@ export const deleteUser = async ({ event, prisma }: { event: UserWebhookEvent; p
 			log.debug('User deleted!!', user);
 			log.info('-----------------------------------------------');
 		}
-		return;
+		return user;
 	} catch (err) {
 		console.error(err);
 		throw err;
@@ -109,7 +109,7 @@ export const createOrganisation = async ({
 		log.info('-----------------------------------------------');
 		log.debug('Updated user!!', user);
 		log.info('-----------------------------------------------');
-		return user;
+		return organization;
 	} catch (err) {
 		console.error(err);
 		throw err;
