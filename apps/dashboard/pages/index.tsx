@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Page from '../layout/Page';
 import { Stack, Title, Text, Group, Image, Space } from '@mantine/core';
 import { useUser } from '@clerk/nextjs';
+import { trpc } from '../utils/trpc';
+import Pluralize from 'react-pluralize';
 
 export function Index() {
 	const { user } = useUser();
+	const { data: issues } = trpc.issue.getIssues.useQuery();
+	const { data: employeeIds } = trpc.issue.getUniqueEmployees.useQuery();
+
+	const num_issues = useMemo(() => (issues ? issues.length : 0), [issues]);
+	const num_employees = useMemo(() => (employeeIds ? employeeIds.length : 0), [employeeIds]);
+
 	return (
 		<Page.Container>
 			<Stack spacing="xl">
@@ -12,7 +20,15 @@ export function Index() {
 					Welcome {user?.firstName}
 				</Title>
 				<Text>
-					Overall, <strong>120 employees</strong> raised <strong>156 issues</strong> this past week
+					Overall,{' '}
+					<strong>
+						{num_employees} <Pluralize singular="employee" count={num_employees} />
+					</strong>{' '}
+					raised{' '}
+					<strong>
+						{num_issues} <Pluralize singular="issue" count={num_employees} />
+					</strong>{' '}
+					this past week
 				</Text>
 				<Group position="apart">
 					<div>

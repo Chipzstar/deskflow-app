@@ -46,6 +46,7 @@
     "next-axiom": "^0.17.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-pluralize": "^1.6.3",
     "regenerator-runtime": "0.13.7",
     "stripe": "^12.6.0",
     "superjson": "^1.12.3",
@@ -98,4 +99,3 @@
     "typescript": "5.0.4"
   }
 }
-
