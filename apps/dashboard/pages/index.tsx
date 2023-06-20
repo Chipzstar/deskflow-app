@@ -20,15 +20,15 @@ export function Index() {
 					Welcome {user?.firstName}
 				</Title>
 				<Text>
-					Overall,{' '}
+					Overall,&nbsp;
 					<strong>
-						{num_employees} <Pluralize singular="employee" count={num_employees} />
-					</strong>{' '}
-					raised{' '}
+						<Pluralize singular="employee" count={num_employees} />
+					</strong>
+					&nbsp; raised&nbsp;
 					<strong>
-						{num_issues} <Pluralize singular="issue" count={num_employees} />
-					</strong>{' '}
-					this past week
+						<Pluralize singular="issue" count={num_issues} />
+					</strong>
+					&nbsp; this past week
 				</Text>
 				<Group position="apart">
 					<div>
