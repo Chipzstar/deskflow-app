@@ -1,5 +1,5 @@
-import { ActionIcon, Button, Group, Stack, Textarea, TextInput, useMantineTheme } from '@mantine/core';
-import React, { useCallback, useContext, useState } from 'react';
+import { ActionIcon, Stack, Textarea, useMantineTheme } from '@mantine/core';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useId, useViewportSize } from '@mantine/hooks';
 import axios from 'axios';
 import MessageList from '../components/MessageList';
@@ -9,7 +9,7 @@ import { IconSend } from '@tabler/icons-react';
 import { OpenAIContext, OpenAIResponse } from '../context/OpenAIContext';
 import { useForm } from '@mantine/form';
 import Page from '../layout/Page';
-import { useUser } from '@clerk/nextjs';
+import { useOrganization, useUser, useAuth, useOrganizationList } from '@clerk/nextjs';
 
 interface FormValues {
 	query: string;
@@ -18,11 +18,16 @@ interface FormValues {
 export function Chat() {
 	const theme = useMantineTheme();
 	const uuid = useId();
-	const { messages, addMessage, clearChat } = useContext(MessageContext); // Retrieve messages from database
+	const { messages, addMessage } = useContext(MessageContext); // Retrieve messages from database
 	const { history, setHistory } = useContext(OpenAIContext);
 	const [loading, setLoading] = useState(false);
 	const { width, height } = useViewportSize();
 	const { user } = useUser();
+	const { organizationList } = useOrganizationList();
+
+	const organizationName = useMemo(() => {
+		return organizationList?.length ? organizationList[0].organization.name : undefined;
+	}, [organizationList]);
 
 	const form = useForm<FormValues>({
 		initialValues: {
@@ -32,6 +37,7 @@ export function Chat() {
 
 	const chat = useCallback(
 		async (values: FormValues) => {
+			console.log(organizationName);
 			setLoading(true);
 			try {
 				if (!user) throw new Error('User not logged in');
@@ -50,7 +56,8 @@ export function Chat() {
 						query: values.query,
 						name: String(user.firstName),
 						email: user.emailAddresses[0].emailAddress || 'chipzstar.dev@googlemail.com',
-						history: history
+						history: history,
+						company: organizationName
 					}
 				);
 				const { reply, messages: openai_messages } = response.data as OpenAIResponse;
@@ -68,7 +75,7 @@ export function Chat() {
 				alert(err.message);
 			}
 		},
-		[history, messages, user, uuid]
+		[history, messages, user, organizationName, uuid]
 	);
 
 	return (

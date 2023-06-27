@@ -1,5 +1,8 @@
 import { showNotification } from '@mantine/notifications';
 
+export function sanitize_labels(labels: string[]): string[] {
+	return labels.map(label => label.trim().replace(/-_/g, ' '));
+}
 export function notifySuccess(id: string, message: string, icon: JSX.Element) {
 	showNotification({
 		id,

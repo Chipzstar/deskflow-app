@@ -14,6 +14,20 @@ module.exports = {
 				sans: ['Inter var', ...defaultTheme.fontFamily.sans]
 			},
 			colors: {
+				['primary-light']: {
+					DEFAULT: '#E9ECFE',
+					50: '#FFFFFF',
+					100: '#FFFFFF',
+					200: '#FFFFFF',
+					300: '#FFFFFF',
+					400: '#FFFFFF',
+					500: '#E9ECFE',
+					600: '#B3BEFC',
+					700: '#7E8FF9',
+					800: '#4861F7',
+					900: '#1233F4',
+					950: '#0A29E0'
+				},
 				primary: {
 					DEFAULT: '#2742F5',
 					50: '#D6DCFD',
