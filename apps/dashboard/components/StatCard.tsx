@@ -12,7 +12,6 @@ const StatCard = ({ value, description, loading, extra }: Props) => {
 	return (
 		<Card
 			h={150}
-			w={400}
 			radius="md"
 			padding="lg"
 			className="border-primary border"

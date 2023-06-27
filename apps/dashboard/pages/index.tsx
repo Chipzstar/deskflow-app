@@ -22,7 +22,18 @@ import {
 import { Line } from 'react-chartjs-2';
 import { sanitize_labels } from '../utils/functions';
 
-ChartJS.register(Tooltip, Legend, LineElement, LinearScale, LineController, CategoryScale, PointElement);
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+ChartJS.register(
+	Tooltip,
+	Legend,
+	LineElement,
+	LinearScale,
+	LineController,
+	CategoryScale,
+	ChartDataLabels,
+	PointElement
+);
 
 export function Index() {
 	const { user } = useUser();
@@ -31,6 +42,14 @@ export function Index() {
 
 	const num_issues = useMemo(() => (issues ? issues.length : 0), [issues]);
 	const num_employees = useMemo(() => (employeeIds ? employeeIds.length : 0), [employeeIds]);
+
+	const issues_per_employee = useMemo(() => {
+		if (employeeIds && issues) {
+			return !employeeIds.length ? 0 : Math.ceil(issues.length / employeeIds.length);
+		}
+		return 0;
+	}, [issues, employeeIds]);
+
 	const time_to_resolution = useMemo(() => {
 		if (issues) {
 			return issues.reduce((prev, issue) => {
@@ -42,19 +61,25 @@ export function Index() {
 		}
 		return 0;
 	}, [issues]);
-	const num_satisfied = useMemo(() => {
-		return issues ? issues.filter(i => i.is_satisfied).length : 0;
+	const satisfaction_rate = useMemo(() => {
+		if (issues) {
+			const num_satisfied = issues.filter(i => i.is_satisfied).length;
+			return !issues.length ? 0 : Math.ceil((num_satisfied / issues.length) * 100);
+		}
+		return 0;
 	}, [issues]);
 
 	const data: ChartData<'line', (number | Point | null)[], unknown> = useMemo(() => {
-		const labels = sanitize_labels(Object.values(IssueCategory));
+		const categories = Object.values(IssueCategory);
 		const data = issues
-			? labels.map(category => issues.filter(issue => issue.category === category).length)
-			: Array(labels.length).fill(0);
-		console.log(labels);
-		console.log(data);
+			? categories.map(category => {
+					const num_issues = issues.filter(issue => issue.category === category).length;
+					return Math.ceil((num_issues / issues.length) * 100);
+					// eslint-disable-next-line no-mixed-spaces-and-tabs
+			  })
+			: Array(categories.length).fill(0);
 		return {
-			labels,
+			labels: sanitize_labels(categories),
 			datasets: [
 				{
 					label: 'Number of issues',
@@ -84,15 +109,15 @@ export function Index() {
 					</strong>
 					&nbsp;this past week
 				</Text>
-				<Group position="apart" spacing="xs">
+				<Group grow position="apart" spacing="xl" noWrap={false}>
 					<StatCard
 						loading={employeesLoading}
-						value={Math.ceil(num_issues / num_employees)}
+						value={issues_per_employee}
 						description={'Issues per employee'}
 					/>
 					<StatCard
 						loading={issuesLoading}
-						value={Math.ceil((num_satisfied / num_issues) * 100)}
+						value={satisfaction_rate}
 						description={'Employee Satisfaction'}
 						extra={'%'}
 					/>
@@ -116,6 +141,12 @@ export function Index() {
 							maintainAspectRatio: false,
 							responsive: true,
 							plugins: {
+								datalabels: {
+									formatter: (value, context) => `${value}%`,
+									anchor: 'end',
+									align: 'top',
+									clamp: true
+								},
 								legend: {
 									align: 'end',
 									position: 'bottom'
@@ -123,6 +154,51 @@ export function Index() {
 								tooltip: {
 									mode: 'index',
 									intersect: false
+								}
+							},
+							scales: {
+								x: {
+									grid: {
+										display: true
+									},
+									title: {
+										display: true,
+										font: {
+											weight: '600',
+											size: 17
+										},
+										text: 'Category'
+									},
+									ticks: {
+										color: '#AEAEAE',
+										font: {
+											size: 14,
+											weight: '600'
+										}
+									}
+								},
+								y: {
+									grid: {
+										display: false
+									},
+									title: {
+										display: true,
+										text: 'Percentage',
+										font: {
+											weight: '600',
+											size: 17
+										}
+									},
+									ticks: {
+										color: '#AEAEAE',
+										font: {
+											size: 14,
+											weight: '600'
+										},
+										callback: function (value, index, ticks) {
+											return `${value}%`;
+										}
+									}
 								}
 							}
 						}}

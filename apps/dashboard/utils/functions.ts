@@ -1,8 +1,20 @@
 import { showNotification } from '@mantine/notifications';
 
-export function sanitize_labels(labels: string[]): string[] {
-	return labels.map(label => label.trim().replace(/-_/g, ' '));
+export function capitalize(str: string): string {
+	return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
+
+export function capitalize_all(str: string): string {
+	return str
+		.split(' ')
+		.map(word => capitalize(word))
+		.join(' ');
+}
+
+export function sanitize_labels(labels: string[]): string[] {
+	return labels.map(label => capitalize_all(label.trim().replace(/[-_]/g, ' ')));
+}
+
 export function notifySuccess(id: string, message: string, icon: JSX.Element) {
 	showNotification({
 		id,
