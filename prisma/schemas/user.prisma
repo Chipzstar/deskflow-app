@@ -16,6 +16,7 @@ model User {
   slack                  Slack?
   zendesk                Zendesk?
   organization           Organization @relation(fields: [organization_id], references: [clerk_id], onDelete: Cascade)
+  issues                 Issue[]
 
   @@index([organization_id])
 }
