@@ -1,14 +1,16 @@
 import React from 'react';
 import { Card, Loader, Stack, Text } from '@mantine/core';
+import dayjs from 'dayjs';
 
 interface Props {
 	value: number;
 	description: string;
 	loading: boolean;
+	type?: 'NORMAL' | 'DURATION';
 	extra?: string;
 }
 
-const StatCard = ({ value, description, loading, extra }: Props) => {
+const StatCard = ({ type = 'NORMAL', value, description, loading, extra }: Props) => {
 	return (
 		<Card
 			h={150}
@@ -24,8 +26,8 @@ const StatCard = ({ value, description, loading, extra }: Props) => {
 					<Loader />
 				) : (
 					<Text size={38} color="brand" weight={600}>
-						{value}
-						{extra}
+						{value > 1000 ? Math.round(value / 60) : value}
+						{value > 1000 ? ' minutes' : extra}
 					</Text>
 				)}
 				<Text size={20} className="font-semibold">

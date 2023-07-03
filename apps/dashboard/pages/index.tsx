@@ -122,6 +122,7 @@ export function Index() {
 						extra={'%'}
 					/>
 					<StatCard
+						type={'DURATION'}
 						loading={issuesLoading}
 						value={time_to_resolution}
 						description={'Time to resolution'}
