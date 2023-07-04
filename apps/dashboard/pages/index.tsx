@@ -53,7 +53,7 @@ export function Index() {
 	const time_to_resolution = useMemo(() => {
 		if (issues) {
 			return issues.reduce((prev, issue) => {
-				if (issue.status === 'resolved' || issue.status === 'closed') {
+				if (['resolved', 'closed', 'unresolved'].includes(issue.status)) {
 					return prev + dayjs(issue.resolved_at).diff(dayjs(issue.created_at), 'seconds');
 				}
 				return prev;
