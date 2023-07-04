@@ -23,7 +23,6 @@ const Integrations = () => {
 	const integrate = useCallback(
 		name => {
 			const redirect_origin = process.env.NEXT_PUBLIC_NGROK_URL || process.env.NEXT_PUBLIC_HOST_DOMAIN;
-      console.table({redirect_origin})
 			const SLACK_CLIENT_ID = String(process.env.NEXT_PUBLIC_SLACK_CLIENT_ID);
 			const SLACK_SCOPES = String(process.env.NEXT_PUBLIC_SLACK_SCOPES);
 			const ZENDESK_CLIENT_ID = String(process.env.NEXT_PUBLIC_ZENDESK_CLIENT_ID);

@@ -8,8 +8,10 @@ import { notifyError, notifySuccess } from '../../utils/functions';
 import { IconCheck, IconExternalLink, IconX } from '@tabler/icons-react';
 import { useLocalStorage } from '@mantine/hooks';
 import IntegrationStatus from '../../components/IntegrationStatus';
+import { useUser } from '@clerk/nextjs';
 
 const ZendeskGuide = () => {
+	const { user } = useUser();
 	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery();
 	const { mutateAsync: zendeskExchangeToken } = trpc.zendesk.exchangeToken.useMutation();
 	const router = useRouter();
@@ -20,7 +22,7 @@ const ZendeskGuide = () => {
 		const hasCode = searchParams.has('code');
 		const hasState = searchParams.has('state');
 		const hasError = searchParams.has('error_description');
-		if (subdomain && hasCode && hasState) {
+		if (user && subdomain && hasCode && hasState) {
 			zendeskExchangeToken({
 				type: 'guide',
 				subdomain,
@@ -33,7 +35,7 @@ const ZendeskGuide = () => {
 							`${
 								process.env.NEXT_PUBLIC_NGROK_API_URL || process.env.NEXT_PUBLIC_API_HOST
 							}/zendesk/knowledge-base`,
-							{ token: res.access_token, subdomain }
+							{ token: res.access_token, subdomain, email: user.emailAddresses[0].emailAddress }
 						)
 						.then(res => {
 							console.table(res.data);
@@ -67,7 +69,7 @@ const ZendeskGuide = () => {
 				<IconX size={20} />
 			);
 		}
-	}, [router.asPath, subdomain]);
+	}, [router.asPath, subdomain, user]);
 
 	return (
 		<Page.Container>
