@@ -24,26 +24,27 @@ enum CommunicationChannel {
 }
 
 model Issue {
-  id             Int                  @id @default(autoincrement())
-  created_at     DateTime             @default(now())
-  updated_at     DateTime             @updatedAt
-  resolved_at    DateTime?
-  issue_id       String               @unique
-  celery_task_id String
-  user_id        String
-  user           User                 @relation(fields: [user_id], references: [clerk_id], onDelete: Cascade)
-  org_name       String               @default("")
-  channel        CommunicationChannel
-  org_id         String
-  organization   Organization         @relation(fields: [org_id], references: [clerk_id], onDelete: Cascade)
-  employee_id    String
-  employee_name  String               @default("")
-  employee_email String               @default("")
-  category       IssueCategory
-  messageHistory String               @db.LongText
-  status         IssueStatus
-  is_satisfied   Boolean
-  reason         String?
+  id              Int                  @id @default(autoincrement())
+  created_at      DateTime             @default(now())
+  updated_at      DateTime             @updatedAt
+  resolved_at     DateTime?
+  issue_id        String               @unique
+  conversation_id String
+  celery_task_id  String
+  user_id         String
+  user            User                 @relation(fields: [user_id], references: [clerk_id], onDelete: Cascade)
+  org_name        String               @default("")
+  channel         CommunicationChannel
+  org_id          String
+  organization    Organization         @relation(fields: [org_id], references: [clerk_id], onDelete: Cascade)
+  employee_id     String
+  employee_name   String               @default("")
+  employee_email  String               @default("")
+  category        IssueCategory
+  messageHistory  String               @db.LongText
+  status          IssueStatus
+  is_satisfied    Boolean
+  reason          String?
 
   @@index([user_id])
   @@index([org_id])

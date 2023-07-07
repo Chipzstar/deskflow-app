@@ -12,8 +12,11 @@ import { useUser } from '@clerk/nextjs';
 
 const ZendeskGuide = () => {
 	const { user } = useUser();
+	const util = trpc.useContext();
 	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery();
-	const { mutateAsync: zendeskExchangeToken } = trpc.zendesk.exchangeToken.useMutation();
+	const { mutateAsync: zendeskExchangeToken } = trpc.zendesk.exchangeToken.useMutation({
+		onSuccess: input => util.zendesk.getZendeskInfo.invalidate()
+	});
 	const router = useRouter();
 	const [subdomain, setSubdomain] = useLocalStorage({ key: 'zendesk-subdomain', defaultValue: '' });
 
@@ -69,7 +72,7 @@ const ZendeskGuide = () => {
 				<IconX size={20} />
 			);
 		}
-	}, [router.asPath, subdomain, user]);
+	}, [subdomain, user]);
 
 	return (
 		<Page.Container>

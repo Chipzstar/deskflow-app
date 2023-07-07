@@ -37,7 +37,7 @@ const zendeskRouter = createTRPCRouter({
 				});
 				if (!user) throw Error('User not found');
 				// App credentials found in the Basic Information section of the app configuration
-				const client_id = String(process.env.NEXT_PUBLIC_ZENDESK_CLIENT_ID);
+				const client_id = String(process.env.ZENDESK_CLIENT_ID);
 				const client_secret = String(process.env.ZENDESK_CLIENT_SECRET);
 				const scope = String(process.env.NEXT_PUBLIC_ZENDESK_SCOPES);
 				// Create a client instance just to make this single call, and use it for the exchange
@@ -51,6 +51,16 @@ const zendeskRouter = createTRPCRouter({
 				});
 				console.log('-----------------------------------------------');
 				console.log(result);
+				// fetch the account user's information
+				const { data: profile } = await axios.get(
+					`https://${input.subdomain}.zendesk.com/api/v2/users/me.json`,
+					{
+						headers: {
+							Authorization: `Bearer ${result.access_token}`
+						}
+					}
+				);
+				console.log(profile.user);
 				let zendesk = await ctx.prisma.zendesk.findUnique({
 					where: {
 						user_id: user.clerk_id
@@ -60,9 +70,13 @@ const zendeskRouter = createTRPCRouter({
 					zendesk = await ctx.prisma.zendesk.create({
 						data: {
 							user_id: user.clerk_id,
+							account_id: String(profile.user.id),
+							account_email: profile.user.email,
+							organization_id: String(profile.user.organization_id),
 							access_token: result.access_token,
 							subdomain: input.subdomain,
-							[input.type]: true
+							guide: true,
+							support: true
 						}
 					});
 				} else {
@@ -73,7 +87,11 @@ const zendeskRouter = createTRPCRouter({
 						data: {
 							access_token: result.access_token,
 							subdomain: input.subdomain,
-							[input.type]: true
+							account_id: String(profile.user.id),
+							account_email: profile.user.email,
+							organization_id: String(profile.user.organization_id),
+							guide: true,
+							support: true
 						}
 					});
 				}
