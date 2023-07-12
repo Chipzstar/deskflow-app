@@ -19,7 +19,6 @@ export const UNDER_TWENTY_FIVE_MB = 24900000; // 24.9 MB
 export const FIVE_HUNDRED_POUNDS = 50000;
 export const DEFAULT_HEADER_HEIGHT = 75;
 export const BANNER_HEIGHT = 65;
-
 export const STORAGE_KEYS = {
 	ACCOUNT: 'account',
 	SIGNUP_FORM: 'signup-form',
@@ -30,6 +29,8 @@ export const PATHS = {
 	HOME: '/',
 	SIGNUP: '/signup',
 	LOGIN: '/login',
+	ONBOARDING: '/onboarding',
+	FORGOT_PASSWORD: '/forgot-password',
 	CREATE_ORGANISATION: '/create-organisation',
 	INTEGRATIONS: '/integrations',
 	CHAT: '/chat'

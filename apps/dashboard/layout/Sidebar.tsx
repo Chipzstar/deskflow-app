@@ -130,7 +130,11 @@ const Sidebar = ({ opened, setOpened }) => {
 				{links}
 			</Navbar.Section>
 			<Navbar.Section className={classes.footer}>
-				<div data-cy="logout-button" className={classes.link} onClick={() => signOut()}>
+				<div
+					data-cy="logout-button"
+					className={classes.link}
+					onClick={() => signOut().then(() => console.log('signed out'))}
+				>
 					<IconLogout className={classes.linkIcon} stroke={1.5} />
 				</div>
 			</Navbar.Section>

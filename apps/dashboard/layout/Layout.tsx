@@ -3,7 +3,7 @@ import { AppShell, Burger, Header, Image, MediaQuery, Text } from '@mantine/core
 import { useRouter } from 'next/router';
 import { AUTH_ROUTES, DEFAULT_HEADER_HEIGHT, PATHS } from '../utils/constants';
 import Sidebar from './Sidebar';
-import { UserButton } from '@clerk/nextjs';
+import { useClerk, UserButton } from '@clerk/nextjs';
 
 const Layout = ({ children }) => {
 	const router = useRouter();
