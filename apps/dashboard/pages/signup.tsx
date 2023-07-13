@@ -270,12 +270,24 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
 	const user = userId ? await clerkClient.users.getUser(userId) : undefined;
 	console.table({ userId, user: !!user });
 	if (user) {
-		return {
-			redirect: {
-				destination: `${PATHS.HOME}?redirect_url= ${ctx.resolvedUrl}`,
-				permanent: false
-			}
-		};
+		const organization_list = userId
+			? await clerkClient.users.getOrganizationMembershipList({ userId })
+			: undefined;
+		if (organization_list?.length) {
+			return {
+				redirect: {
+					destination: `${PATHS.HOME}?redirect_url= ${ctx.resolvedUrl}`,
+					permanent: false
+				}
+			};
+		} else {
+			return {
+				redirect: {
+					destination: `${PATHS.CREATE_ORGANISATION}?redirect_url= ${ctx.resolvedUrl}`,
+					permanent: false
+				}
+			};
+		}
 	}
 	const emails = await prisma.user.findMany({
 		select: {
