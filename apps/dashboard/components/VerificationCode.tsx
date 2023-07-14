@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Group, Modal, PinInput } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
-const VerificationCode = ({ opened, onClose, onSubmit, loading }) => {
+const VerificationCode = ({ opened, onClose, onSubmit, loading, error }) => {
 	const [code, setCode] = useState('');
 	return (
 		<Modal
@@ -16,7 +17,7 @@ const VerificationCode = ({ opened, onClose, onSubmit, loading }) => {
 			<Modal.Body>
 				<div className="flex flex-col space-y-12">
 					<Group position="center">
-						<PinInput size="xl" length={6} value={code} onChange={setCode} />
+						<PinInput error={error} size="xl" length={6} value={code} onChange={setCode} />
 					</Group>
 				</div>
 				<Group pt="xl" position="right">

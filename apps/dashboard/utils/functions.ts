@@ -2,6 +2,20 @@ import { showNotification } from '@mantine/notifications';
 import { requirements } from './constants';
 import parsePhoneNumber from 'libphonenumber-js';
 
+/**
+ * Returns a sluggified version of a string. For example given a string "Hello World" it will return "hello-world".
+ * @param str
+ */
+export function sluggify(str: string): string {
+	return str
+		.toLowerCase()
+		.replace(/\s+/g, '-')
+		.replace(/[^\w-]+/g, '')
+		.replace(/--+/g, '-')
+		.replace(/^-+/, '')
+		.replace(/-+$/, '');
+}
+
 export function capitalize(str: string): string {
 	return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }

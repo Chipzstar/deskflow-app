@@ -25,15 +25,7 @@ import { useRouter } from 'next/router';
 import { useForm, zodResolver } from '@mantine/form';
 import { useSignUp, useClerk } from '@clerk/nextjs';
 import VerificationCode from '../components/VerificationCode';
-
-interface SignupInfo {
-	fullname: string | null;
-	firstname: string;
-	lastname: string;
-	email: string;
-	phone: string;
-	password: string;
-}
+import { SignupInfo } from '../utils/types';
 
 function PasswordRequirement({ meets, label }: { meets: boolean; label: string }) {
 	return (
@@ -69,6 +61,7 @@ const Signup = ({ emails }) => {
 	const [code_form, handlers] = useDisclosure(false);
 	const [newAccount, setNewAccount] = useLocalStorage({ key: STORAGE_KEYS.ACCOUNT, defaultValue: null });
 	const [popoverOpened, setPopoverOpened] = useState(false);
+	const [error, handleError] = useDisclosure(false);
 
 	const [userForm, setUserForm] = useLocalStorage<Partial<SignupInfo>>({
 		key: STORAGE_KEYS.SIGNUP_FORM,
@@ -141,6 +134,7 @@ const Signup = ({ emails }) => {
 					router.push(PATHS.CREATE_ORGANISATION);
 				}
 			} catch (error) {
+				handleError.open();
 				setLoading(false);
 				console.log('Signup Failed');
 				notifyError('signup-failure', 'Signup failed. Please try again', <IconX size={20} />);
@@ -170,7 +164,13 @@ const Signup = ({ emails }) => {
 
 	return (
 		<Page.Container extraClassNames="flex justify-center items-center">
-			<VerificationCode opened={code_form} onClose={handlers.close} onSubmit={confirmSignUp} loading={loading} />
+			<VerificationCode
+				opened={code_form}
+				onClose={handlers.close}
+				onSubmit={confirmSignUp}
+				loading={loading}
+				error={error}
+			/>
 			<form
 				data-cy="signup-form"
 				onSubmit={form.onSubmit(handleSubmit)}

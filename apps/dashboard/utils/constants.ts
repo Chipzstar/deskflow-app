@@ -18,7 +18,8 @@ export const BANNER_HEIGHT = 65;
 export const STORAGE_KEYS = {
 	ACCOUNT: 'account',
 	SIGNUP_FORM: 'signup-form',
-	TEST_MODE: 'test-mode'
+	TEST_MODE: 'test-mode',
+	COMPANY_FORM: 'company-form'
 };
 
 export const PATHS = {
@@ -27,9 +28,10 @@ export const PATHS = {
 	LOGIN: '/login',
 	ONBOARDING: '/onboarding',
 	FORGOT_PASSWORD: '/forgot-password',
+	INVITE_MEMBERS: '/invite-members',
 	CREATE_ORGANISATION: '/create-organisation',
 	INTEGRATIONS: '/integrations',
 	CHAT: '/chat'
 };
 
-export const AUTH_ROUTES = [PATHS.LOGIN, PATHS.SIGNUP, PATHS.CREATE_ORGANISATION];
+export const AUTH_ROUTES = [PATHS.LOGIN, PATHS.SIGNUP, PATHS.CREATE_ORGANISATION, PATHS.INVITE_MEMBERS];

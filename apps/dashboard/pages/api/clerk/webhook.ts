@@ -5,7 +5,13 @@ import { log } from 'next-axiom';
 import { buffer } from 'micro';
 import { Webhook, WebhookRequiredHeaders } from 'svix';
 import { IncomingHttpHeaders } from 'http';
-import { createNewUser, createOrganisation, deleteUser, updateUser } from '../../../server/handlers/clerk-webhook';
+import {
+	createNewUser,
+	createOrganisation,
+	deleteOrganisation,
+	deleteUser,
+	updateUser
+} from '../../../server/handlers/clerk-webhook';
 import type { WebhookEvent } from '@clerk/clerk-sdk-node';
 import Prisma from '@prisma/client';
 
@@ -48,6 +54,9 @@ export default async function handler(req: NextApiRequestWithSvixRequiredHeaders
 					break;
 				case 'organization.created':
 					data = await createOrganisation({ event, prisma });
+					break;
+				case 'organization.deleted':
+					data = await deleteOrganisation({ event, prisma });
 					break;
 				default:
 					console.log(`Unhandled event type ${event.type}`);

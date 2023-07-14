@@ -115,3 +115,37 @@ export const createOrganisation = async ({
 		throw err;
 	}
 };
+
+export const deleteOrganisation = async ({
+	event,
+	prisma
+}: {
+	event: OrganizationWebhookEvent;
+	prisma: PrismaClient;
+}) => {
+	try {
+		const payload = event.data as OrganizationJSON;
+		// delete all users under that organisation
+		const users = await prisma.user.deleteMany({
+			where: {
+				organization_id: payload.id
+			}
+		});
+		log.info('-----------------------------------------------');
+		log.debug('Deleted Users!!', users);
+		log.info('-----------------------------------------------');
+		// delete the organization
+		const organization = await prisma.organization.delete({
+			where: {
+				clerk_id: payload.id
+			}
+		});
+		log.info('-----------------------------------------------');
+		log.debug('Organisation deleted!!', organization);
+		log.info('-----------------------------------------------');
+		return organization;
+	} catch (err) {
+		console.error(err);
+		throw err;
+	}
+};

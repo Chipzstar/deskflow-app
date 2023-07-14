@@ -1,10 +1,14 @@
 model Organization {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  clerk_id   String   @unique
-  name       String   @default("")
-  slug       String   @default("")
-  users      User[]
-  issues     Issue[]
+  id                    Int      @id @default(autoincrement())
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+  clerk_id              String   @unique
+  name                  String   @default("")
+  slug                  String   @default("")
+  slack_auth_state_id   String   @default("")
+  zendesk_auth_state_id String   @default("")
+  users                 User[]
+  issues                Issue[]
+  slack                 Slack?
+  zendesk               Zendesk?
 }
