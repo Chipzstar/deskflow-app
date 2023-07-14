@@ -6,10 +6,10 @@ import axios from 'axios';
 const zendeskRouter = createTRPCRouter({
 	getZendeskInfo: protectedProcedure.query(async ({ ctx, input }) => {
 		try {
-			const user_id = ctx.auth.userId;
+			const org_id = ctx.auth.orgId;
 			return await ctx.prisma.zendesk.findUnique({
 				where: {
-					user_id
+					org_id
 				}
 			});
 		} catch (err) {
@@ -30,12 +30,12 @@ const zendeskRouter = createTRPCRouter({
 			try {
 				console.table(input);
 				// STATE VERIFICATION - look up the user with a matching state value
-				const user = await ctx.prisma.user.findFirst({
+				const org = await ctx.prisma.organization.findFirst({
 					where: {
 						zendesk_auth_state_id: input.state
 					}
 				});
-				if (!user) throw Error('User not found');
+				if (!org) throw Error('Organization not found');
 				// App credentials found in the Basic Information section of the app configuration
 				const client_id = String(process.env.ZENDESK_CLIENT_ID);
 				const client_secret = String(process.env.ZENDESK_CLIENT_SECRET);
@@ -63,16 +63,15 @@ const zendeskRouter = createTRPCRouter({
 				console.log(profile.user);
 				let zendesk = await ctx.prisma.zendesk.findUnique({
 					where: {
-						user_id: user.clerk_id
+						org_id: org.clerk_id
 					}
 				});
 				if (!zendesk) {
 					zendesk = await ctx.prisma.zendesk.create({
 						data: {
-							user_id: user.clerk_id,
+							org_id: org.clerk_id,
 							account_id: String(profile.user.id),
 							account_email: profile.user.email,
-							organization_id: String(profile.user.organization_id),
 							access_token: result.access_token,
 							subdomain: input.subdomain,
 							guide: true,
@@ -82,14 +81,13 @@ const zendeskRouter = createTRPCRouter({
 				} else {
 					zendesk = await ctx.prisma.zendesk.update({
 						where: {
-							user_id: user.clerk_id
+							org_id: org.clerk_id
 						},
 						data: {
 							access_token: result.access_token,
 							subdomain: input.subdomain,
 							account_id: String(profile.user.id),
 							account_email: profile.user.email,
-							organization_id: String(profile.user.organization_id),
 							guide: true,
 							support: true
 						}
