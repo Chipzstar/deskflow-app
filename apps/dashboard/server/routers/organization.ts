@@ -15,11 +15,10 @@ const organizationRouter = createTRPCRouter({
 					slack: true,
 					zendesk: true
 				}
-
 			});
 		} catch (err) {
 			console.error(err);
-			throw new TRPCError({ code "INTERNAL_SERVER_ERROR", message: `No organization found with ID: ${ctx.auth.orgId}` });
+			throw new TRPCError({ message: `No organization found with ID: ${ctx.auth.orgId}`, code: 'BAD_REQUEST' });
 		}
 	}),
 	createOrganization: protectedProcedure

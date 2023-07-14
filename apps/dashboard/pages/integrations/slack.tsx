@@ -13,7 +13,7 @@ import querystring from 'querystring';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
-	const { mutate: updateState } = trpc.user.updateSlackState.useMutation();
+	const { mutate: updateState } = trpc.organisation.updateSlackState.useMutation();
 	const router = useRouter();
 	const state = uuidv4();
 

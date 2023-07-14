@@ -5,7 +5,7 @@ interface Props {
 }
 
 const AddToSlack = ({ state }: Props) => {
-	const { mutate: updateState } = trpc.user.updateSlackState.useMutation();
+	const { mutate: updateState } = trpc.organisation.updateSlackState.useMutation();
 	return (
 		<a
 			href={`https://slack.com/oauth/v2/authorize?scope=app_mentions%3Aread%2Cchannels%3Ahistory%2Cchannels%3Aread%2Cchat%3Awrite%2Ccommands%2Cgroups%3Ahistory%2Cim%3Ahistory%2Cim%3Aread%2Cim%3Awrite%2Cmpim%3Ahistory%2Cusers%3Aread%2Cusers%3Aread.email%2Cusers.profile%3Aread&user_scope=&redirect_uri=https%3A%2F%2Fdeskflow-app-git-dev-deskflow.vercel.app%2Fintegrations%2Fslack&client_id=5172579464435.5245428704615&state=${state}`}
