@@ -12,10 +12,10 @@ import { getHotkeyHandler, useLocalStorage } from '@mantine/hooks';
 
 const Integrations = () => {
 	const router = useRouter();
-	const { data: user } = trpc.user.getUser.useQuery();
+	const { data: org } = trpc.organisation.getOrganization.useQuery();
 	const [loading, setLoading] = useState(false);
-	const { mutateAsync: updateSlackState } = trpc.user.updateSlackState.useMutation();
-	const { mutateAsync: updateZendeskState } = trpc.user.updateZendeskState.useMutation();
+	const { mutateAsync: updateSlackState } = trpc.organisation.updateSlackState.useMutation();
+	const { mutateAsync: updateZendeskState } = trpc.organisation.updateZendeskState.useMutation();
 	const [opened, setOpened] = useState(false);
 	const [subdomain, setSubdomain] = useLocalStorage({ key: 'zendesk-subdomain', defaultValue: '' });
 	const state = uuidv4();
@@ -162,7 +162,7 @@ const Integrations = () => {
 						img="/static/images/zendesk-guide.svg"
 						onModal={() => setOpened(true)}
 						onIntegrate={integrate}
-						isIntegrated={Boolean(user?.zendesk)}
+						isIntegrated={Boolean(org?.zendesk)}
 					/>
 					<IntegrationCard name="confluence" img="/static/images/confluence.svg" onIntegrate={integrate} />
 					<IntegrationCard name="sharepoint" img="/static/images/sharepoint.svg" onIntegrate={integrate} />
@@ -187,7 +187,7 @@ const Integrations = () => {
 						w={150}
 						onModal={() => setOpened(true)}
 						onIntegrate={integrate}
-						isIntegrated={Boolean(user?.zendesk)}
+						isIntegrated={Boolean(org?.zendesk)}
 					/>
 					<IntegrationCard
 						name="freshservice"
@@ -208,7 +208,7 @@ const Integrations = () => {
 						name="slack"
 						img="/static/images/slack.svg"
 						onIntegrate={integrate}
-						isIntegrated={Boolean(user?.slack)}
+						isIntegrated={Boolean(org?.slack)}
 					/>
 					<IntegrationCard
 						name="gmail"

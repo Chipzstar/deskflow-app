@@ -5,6 +5,23 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { sluggify } from '../../utils/functions';
 
 const organizationRouter = createTRPCRouter({
+	getOrganization: protectedProcedure.query(async ({ ctx }) => {
+		try {
+			return await ctx.prisma.organization.findUnique({
+				where: {
+					clerk_id: ctx.auth.orgId
+				},
+				include: {
+					slack: true,
+					zendesk: true
+				}
+
+			});
+		} catch (err) {
+			console.error(err);
+			throw new TRPCError({ code "INTERNAL_SERVER_ERROR", message: `No organization found with ID: ${ctx.auth.orgId}` });
+		}
+	}),
 	createOrganization: protectedProcedure
 		.input(
 			z.object({
@@ -35,6 +52,60 @@ const organizationRouter = createTRPCRouter({
 			} catch (err) {
 				console.error(err);
 				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err?.message });
+			}
+		}),
+	updateSlackState: protectedProcedure
+		.input(
+			z.object({
+				state: z.string()
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			try {
+				const org = await ctx.prisma.organization.update({
+					where: {
+						clerk_id: ctx.auth.orgId
+					},
+					data: {
+						slack_auth_state_id: input.state
+					}
+				});
+				console.log(org);
+				return 'Success';
+			} catch (err) {
+				console.error(err);
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: err?.message ?? 'Internal Server Error'
+				});
+			}
+		}),
+	updateZendeskState: protectedProcedure
+		.input(
+			z.object({
+				state: z.string()
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			try {
+				const org = await ctx.prisma.organization.update({
+					where: {
+						clerk_id: ctx.auth.orgId
+					},
+					data: {
+						zendesk_auth_state_id: input.state
+					}
+				});
+				console.log('-----------------------------------------------');
+				console.log(org);
+				console.log('-----------------------------------------------');
+				return 'Success';
+			} catch (err) {
+				console.error(err);
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: err?.message ?? 'Internal Server Error'
+				});
 			}
 		})
 });
