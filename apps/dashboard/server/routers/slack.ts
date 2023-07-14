@@ -8,7 +8,7 @@ const slackRouter = createTRPCRouter({
 		try {
 			const slack = await ctx.prisma.slack.findUnique({
 				where: {
-					user_id: ctx.auth.userId
+					org_id: ctx.auth.orgId
 				}
 			});
 			if (!slack) {
@@ -31,12 +31,12 @@ const slackRouter = createTRPCRouter({
 			try {
 				console.table(input);
 				// look up the user with a matching state value
-				const user = await ctx.prisma.user.findFirst({
+				const org = await ctx.prisma.organization.findFirst({
 					where: {
 						slack_auth_state_id: input.state
 					}
 				});
-				if (!user) {
+				if (!org) {
 					throw Error('User not found');
 				}
 				// App credentials found in the Basic Information section of the app configuration
@@ -52,13 +52,13 @@ const slackRouter = createTRPCRouter({
 				console.table(result);
 				const slack = await ctx.prisma.slack.findUnique({
 					where: {
-						user_id: user.clerk_id
+						org_id: org.clerk_id
 					}
 				});
 				if (!slack) {
 					await ctx.prisma.slack.create({
 						data: {
-							user_id: user.clerk_id,
+							org_id: org.clerk_id,
 							team_name: result?.team?.name ?? '',
 							team_id: result?.team?.id ?? '',
 							access_token: result.access_token,
@@ -69,7 +69,7 @@ const slackRouter = createTRPCRouter({
 				} else {
 					await ctx.prisma.slack.update({
 						where: {
-							user_id: user.clerk_id
+							org_id: org.clerk_id
 						},
 						data: {
 							team_name: result?.team?.name ?? '',
