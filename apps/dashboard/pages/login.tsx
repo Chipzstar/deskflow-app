@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useClerk, useSignIn } from '@clerk/nextjs';
+import { useAuth, useClerk, useOrganizationList, useSignIn } from '@clerk/nextjs';
 import Page from '../layout/Page';
 import { useRouter } from 'next/router';
 import { useForm } from '@mantine/form';
@@ -11,12 +11,15 @@ import { IconX } from '@tabler/icons-react';
 import { Button, Group, Image, PasswordInput, Stack, TextInput, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import { getAuth, clerkClient, buildClerkProps } from '@clerk/nextjs/server';
+import { trpc } from '../utils/trpc';
 
 const Login = ({ users }) => {
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
-	const { isLoaded, signIn } = useSignIn();
+	const { isLoaded: signInLoaded, signIn } = useSignIn();
 	const { client, setActive } = useClerk();
+	const { mutateAsync: fetchOrganization } = trpc.organisation.getOrganizationByUser.useMutation();
+	const { isLoaded: orgListLoaded, organizationList } = useOrganizationList();
 
 	useEffect(() => {
 		console.log(client?.sessions);
@@ -39,29 +42,38 @@ const Login = ({ users }) => {
 
 	const handleSignIn = useCallback(
 		async values => {
-			if (!isLoaded) {
+			if (!signInLoaded || !signIn) {
 				return;
 			}
 			try {
 				setLoading(true);
-				if (signIn) {
-					const result = await signIn.create({
-						identifier: values.email,
-						password: values.password
-					});
-					console.log('-----------------------------------------------');
-					console.log(result);
-					if (result.status === 'complete') {
-						console.log('Login Success');
-						await setActive({ session: result.createdSessionId });
+				const result = await signIn.create({
+					identifier: values.email,
+					password: values.password
+				});
+				console.log('-----------------------------------------------');
+				console.log(result);
+				if (result.id && result.status === 'complete') {
+					console.log('Login Success');
+					const organization = await fetchOrganization({ email: values.email });
+					if (organization) {
+						await setActive({
+							session: result.createdSessionId,
+							organization: organization.organization.id
+						});
 						await router.push(PATHS.HOME);
+					} else {
+						await router.push({
+							pathname: PATHS.CREATE_ORGANISATION,
+							query: { session_id: result.createdSessionId }
+						});
 					}
-					// Something went wrong
-					if (result.status === 'needs_identifier') {
-						form.setFieldError('email', 'Email is incorrect');
-					}
-					setLoading(false);
 				}
+				// Something went wrong
+				if (result.status === 'needs_identifier') {
+					form.setFieldError('email', 'Email is incorrect');
+				}
+				setLoading(false);
 			} catch (error) {
 				setLoading(false);
 				console.error('error', error.errors[0].longMessage);
@@ -69,7 +81,7 @@ const Login = ({ users }) => {
 				console.log(error);
 			}
 		},
-		[router, signIn]
+		[signInLoaded, router, signIn]
 	);
 
 	useEffect(() => {
@@ -138,7 +150,6 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
 		}
 	});
 	const user = userId ? await clerkClient.users.getUser(userId) : undefined;
-	console.table({ userId, user: !!user });
 	if (user) {
 		return {
 			redirect: {

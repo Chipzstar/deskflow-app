@@ -9,10 +9,13 @@ import { notifyError } from '../utils/functions';
 import { useRouter } from 'next/router';
 import { OnboardingAccountStep1, OnboardingBusinessInfo } from '../utils/types';
 import { trpc } from '../utils/trpc';
+import { useAuth, useOrganizationList } from '@clerk/nextjs';
 
 const CreateOrganisation = () => {
 	const router = useRouter();
 	const { mutateAsync: createOrganisation } = trpc.organisation.createOrganization.useMutation();
+	const { isLoaded: orgListLoaded, setActive } = useOrganizationList();
+	const { orgId } = useAuth();
 	const [loading, setLoading] = useState(false);
 	const [account, setAccount] = useLocalStorage<Partial<OnboardingAccountStep1>>({
 		key: STORAGE_KEYS.ACCOUNT,
@@ -37,9 +40,16 @@ const CreateOrganisation = () => {
 		}
 	});
 
+	useEffect(() => {
+		console.log(orgId);
+	}, [orgId]);
+
 	const handleSubmit = useCallback(
 		async (values: OnboardingBusinessInfo) => {
 			setLoading(true);
+			if (!orgListLoaded) {
+				return;
+			}
 			try {
 				/*const { is_valid, reason } = await validateCompanyInfo(values.business_crn, values.legal_name);
 				if (!is_valid) throw new Error(reason);*/
@@ -56,17 +66,18 @@ const CreateOrganisation = () => {
 				console.log('-----------------------------------------------');
 				console.log(result);
 				console.log('-----------------------------------------------');*/
-				await createOrganisation(values);
+				const org = await createOrganisation(values);
+				await setActive({ organization: org.id });
 				setAccount({ ...account, business: values });
 				setLoading(false);
-				router.push(PATHS.INVITE_MEMBERS);
+				await router.push(PATHS.INVITE_MEMBERS);
 			} catch (err) {
 				setLoading(false);
 				console.error(err);
 				notifyError('onboarding-step1-failure', err?.error?.message ?? err.message, <IconX size={20} />);
 			}
 		},
-		[account, setAccount]
+		[orgListLoaded, account, setAccount]
 	);
 
 	useEffect(() => {

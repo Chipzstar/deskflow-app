@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import Page from '../layout/Page';
 import { Stack, Title, Text, Group, Space } from '@mantine/core';
-import { useClerk, useUser } from '@clerk/nextjs';
+import { useAuth, useClerk, useUser } from '@clerk/nextjs';
 import { trpc } from '../utils/trpc';
 import Pluralize from 'react-pluralize';
 import StatCard from '../components/StatCard';
@@ -43,6 +43,7 @@ export function Index() {
 	const { client } = useClerk();
 	const { data: issues, isLoading: issuesLoading } = trpc.issue.getIssues.useQuery();
 	const { data: employeeIds, isLoading: employeesLoading } = trpc.issue.getUniqueEmployees.useQuery();
+	const { isLoaded, orgId, userId } = useAuth();
 
 	const num_issues = useMemo(() => (issues ? issues.length : 0), [issues]);
 	const num_employees = useMemo(() => (employeeIds ? employeeIds.length : 0), [employeeIds]);
@@ -93,6 +94,10 @@ export function Index() {
 			]
 		};
 	}, [issues]);
+
+	useEffect(() => {
+		isLoaded && console.table({ orgId, userId });
+	}, [isLoaded]);
 
 	return (
 		<Page.Container>
@@ -223,6 +228,18 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
 				permanent: false
 			}
 		};
+	} else {
+		const organization_list = userId
+			? await clerkClient.users.getOrganizationMembershipList({ userId })
+			: undefined;
+		if (!organization_list?.length) {
+			return {
+				redirect: {
+					destination: `${PATHS.CREATE_ORGANISATION}?redirect_url= ${ctx.resolvedUrl}`,
+					permanent: false
+				}
+			};
+		}
 	}
 	return {
 		props: {

@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { clerkClient } from '@clerk/nextjs/server';
@@ -21,6 +21,33 @@ const organizationRouter = createTRPCRouter({
 			throw new TRPCError({ message: `No organization found with ID: ${ctx.auth.orgId}`, code: 'BAD_REQUEST' });
 		}
 	}),
+	getOrganizationByUser: publicProcedure
+		.input(
+			z.object({
+				email: z.string()
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			try {
+				const user = await ctx.prisma.user.findUniqueOrThrow({
+					where: {
+						email: input.email
+					}
+				});
+				const orgs = await clerkClient.users.getOrganizationMembershipList({
+					userId: user.clerk_id
+				});
+				if (orgs.length === 0) return null;
+				console.log(orgs[0]);
+				return orgs[0];
+			} catch (err) {
+				console.error(err);
+				throw new TRPCError({
+					message: `No organization found with ID: ${ctx.auth.orgId}`,
+					code: 'BAD_REQUEST'
+				});
+			}
+		}),
 	createOrganization: protectedProcedure
 		.input(
 			z.object({
