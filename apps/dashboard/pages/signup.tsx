@@ -24,7 +24,7 @@ import { getE164Number, getStrength, notifyError, notifySuccess } from '../utils
 import { useRouter } from 'next/router';
 import { useForm, zodResolver } from '@mantine/form';
 import { useSignUp, useClerk } from '@clerk/nextjs';
-import VerificationCode from '../components/VerificationCode';
+import VerificationCode from '../modals/VerificationCode';
 import { SignupInfo } from '../utils/types';
 
 function PasswordRequirement({ meets, label }: { meets: boolean; label: string }) {

@@ -16,7 +16,7 @@
     "create-env-file:dashboard": "doppler secrets download --no-file --format env > ./apps/dashboard/.env -p deskflow-app -c dev",
     "webhookthing": "npx webhookthing@latest",
     "stripe-local-webhook": "stripe listen --forward-to localhost:4200/api/stripe/webhook",
-    "ngrok": "ngrok http --domain=deskflow.ngrok.app 4200 --region eu"
+    "ngrok": "ngrok http --domain=deskflow.ngrok.app 4200 --region=eu"
   },
   "private": true,
   "dependencies": {

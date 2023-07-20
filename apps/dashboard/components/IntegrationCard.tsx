@@ -2,9 +2,10 @@ import React from 'react';
 import { Image, Text } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { IconCircleCheck, IconCirclePlus } from '@tabler/icons-react';
+import { IntegrationName } from '../utils/types';
 
 interface Props {
-	name: string;
+	name: IntegrationName;
 	img?: string | null;
 	text?: string | null;
 	w?: number;

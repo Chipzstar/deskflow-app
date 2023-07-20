@@ -2,12 +2,13 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import axios from 'axios';
+import { OAuthToken } from '../../utils/types';
 
 const zendeskRouter = createTRPCRouter({
 	getZendeskInfo: protectedProcedure.query(async ({ ctx, input }) => {
 		try {
 			const org_id = ctx.auth.orgId;
-			return await ctx.prisma.zendesk.findUnique({
+			return await ctx.prisma.zendesk.findUniqueOrThrow({
 				where: {
 					org_id
 				}
@@ -41,7 +42,11 @@ const zendeskRouter = createTRPCRouter({
 				const client_secret = String(process.env.ZENDESK_CLIENT_SECRET);
 				const scope = String(process.env.NEXT_PUBLIC_ZENDESK_SCOPES);
 				// Create a client instance just to make this single call, and use it for the exchange
-				const { data: result } = await axios.post(`https://${input.subdomain}.zendesk.com/oauth/tokens`, {
+				const {
+					data: result
+				}: {
+					data: OAuthToken;
+				} = await axios.post(`https://${input.subdomain}.zendesk.com/oauth/tokens`, {
 					grant_type: 'authorization_code',
 					code: input.code,
 					client_id,

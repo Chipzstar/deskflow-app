@@ -7,9 +7,9 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { notifyError, notifySuccess } from '../../utils/functions';
 import AddToSlack from '../../components/AddToSlack';
-import IntegrationStatus from '../../components/IntegrationStatus';
 import { v4 as uuidv4 } from 'uuid';
 import querystring from 'querystring';
+import IntegrationHeader from '../../layout/integrations/IntegrationHeader';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
@@ -60,8 +60,8 @@ const Slack = () => {
 	}, [state]);
 
 	return (
-		<Page.Container>
-			<IntegrationStatus isActive={!!slack} />
+		<Page.Container px={25} py="sm">
+			<IntegrationHeader isActive={!!slack} />
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Slack Integration</Title>
 				<Image src="/static/images/alfred.svg" height={100} width={100} alt="Alfred logo" />
