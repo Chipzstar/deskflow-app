@@ -138,7 +138,7 @@ const CreateOrganisation = () => {
 						{...form.getInputProps('business_url')}
 						data-cy="onboarding-business-url"
 					/>
-					<Group position="right">
+					<Group position="right" mt="lg">
 						<Button
 							type="submit"
 							variant="filled"

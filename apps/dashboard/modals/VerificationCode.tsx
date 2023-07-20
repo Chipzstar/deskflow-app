@@ -17,7 +17,15 @@ const VerificationCode = ({ opened, onClose, onSubmit, loading, error }) => {
 			<Modal.Body>
 				<div className="flex flex-col space-y-12">
 					<Group position="center">
-						<PinInput error={error} size="xl" length={6} value={code} onChange={setCode} />
+						<PinInput
+							type="number"
+							error={error}
+							size="xl"
+							length={6}
+							value={code}
+							onChange={setCode}
+							onComplete={() => onSubmit(code)}
+						/>
 					</Group>
 				</div>
 				<Group pt="xl" position="right">

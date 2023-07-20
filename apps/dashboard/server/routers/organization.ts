@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { sluggify } from '../../utils/functions';
+import { clients } from '@clerk/nextjs/api';
 
 const organizationRouter = createTRPCRouter({
 	getOrganization: protectedProcedure.query(async ({ ctx }) => {
@@ -131,6 +132,37 @@ const organizationRouter = createTRPCRouter({
 				throw new TRPCError({
 					code: 'INTERNAL_SERVER_ERROR',
 					message: err?.message ?? 'Internal Server Error'
+				});
+			}
+		}),
+	sendOrgInvitation: protectedProcedure
+		.input(
+			z.object({
+				email: z.string().email(),
+				role: z.enum(['admin', 'basic_member', 'guest_member']),
+				orgId: z.string()
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			try {
+				const result = await clerkClient.organizations.createOrganizationInvitation({
+					emailAddress: input.email,
+					role: input.role,
+					organizationId: input.orgId,
+					inviterUserId: ctx.auth.userId,
+					redirectUrl: `${process.env.NGROK_URL || process.env.HOST_DOMAIN}/signup?accept-org-invitation=${
+						input.orgId
+					}`
+				});
+				console.log('-----------------------------------------------');
+				console.log(result);
+				console.log('-----------------------------------------------');
+				return result;
+			} catch (err) {
+				console.error(err);
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: err?.errors[0].longMessage ?? 'Oops something went wrong. Please try again'
 				});
 			}
 		})
