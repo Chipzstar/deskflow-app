@@ -8,8 +8,10 @@ import { IncomingHttpHeaders } from 'http';
 import {
 	createNewUser,
 	createOrganisation,
+	createOrganisationMembership,
 	deleteOrganisation,
 	deleteUser,
+	invitationAccepted,
 	updateUser
 } from '../../../server/handlers/clerk-webhook';
 import type { WebhookEvent } from '@clerk/clerk-sdk-node';
@@ -57,6 +59,12 @@ export default async function handler(req: NextApiRequestWithSvixRequiredHeaders
 					break;
 				case 'organization.deleted':
 					data = await deleteOrganisation({ event, prisma });
+					break;
+				case 'organizationInvitation.accepted':
+					data = await invitationAccepted({ event, prisma });
+					break;
+				case 'organizationMembership.created':
+					data = await createOrganisationMembership({ event, prisma });
 					break;
 				default:
 					console.log(`Unhandled event type ${event.type}`);

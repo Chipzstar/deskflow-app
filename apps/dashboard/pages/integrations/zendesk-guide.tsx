@@ -5,7 +5,7 @@ import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { notifyError, notifySuccess } from '../../utils/functions';
-import { IconCheck, IconExternalLink, IconPlugConnected, IconX } from '@tabler/icons-react';
+import { IconCheck, IconExternalLink, IconPlugConnected, IconRefresh, IconX } from '@tabler/icons-react';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import IntegrationStatus from '../../components/IntegrationStatus';
 import { useUser, useSession } from '@clerk/nextjs';
@@ -136,7 +136,7 @@ const ZendeskGuide = () => {
 							loading={syncing}
 							variant="outline"
 							color="green.8"
-							leftIcon={<IconExternalLink size="0.9rem" />}
+							leftIcon={<IconRefresh size="0.9rem" />}
 							onClick={() => syncKnowledgeBase(zendesk, user ? user.emailAddresses[0].emailAddress : '')}
 						>
 							Re-Sync Knowledge Base

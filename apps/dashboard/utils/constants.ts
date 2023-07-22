@@ -31,7 +31,8 @@ export const PATHS = {
 	INVITE_MEMBERS: '/invite-members',
 	CREATE_ORGANISATION: '/create-organisation',
 	INTEGRATIONS: '/integrations',
-	CHAT: '/chat'
+	CHAT: '/chat',
+	ORGANISATION_PROFILE: '/organisation-profile'
 };
 
 export const AUTH_ROUTES = [PATHS.LOGIN, PATHS.SIGNUP, PATHS.CREATE_ORGANISATION, PATHS.INVITE_MEMBERS];

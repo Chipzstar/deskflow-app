@@ -77,8 +77,7 @@ const Login = ({ users }) => {
 			} catch (error) {
 				setLoading(false);
 				console.error('error', error.errors[0].longMessage);
-				notifyError('login-failure', error.error?.message ?? error.message, <IconX size={20} />);
-				console.log(error);
+				notifyError('login-failure', error?.errors[0]?.longMessage ?? error.message, <IconX size={20} />);
 			}
 		},
 		[signInLoaded, router, signIn]

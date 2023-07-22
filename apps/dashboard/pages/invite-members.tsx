@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Page from '../layout/Page';
 import { Button, Divider, Group, List, Select, Stack, Text, TextInput, ThemeIcon } from '@mantine/core';
 import { useRouter } from 'next/router';
@@ -6,9 +6,8 @@ import { PATHS } from '../utils/constants';
 import { isEmail, useForm } from '@mantine/form';
 import { notifyError, notifySuccess } from '../utils/functions';
 import { IconCheck, IconChevronDown, IconCircleCheck, IconSend, IconUsersPlus, IconX } from '@tabler/icons-react';
-import { clerkClient } from '@clerk/nextjs/server';
 import { OrganizationMembershipRole } from '@clerk/backend/dist/types/api/resources/Enums';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useOrganization } from '@clerk/nextjs';
 import { useDisclosure } from '@mantine/hooks';
 import { trpc } from '../utils/trpc';
 
@@ -20,6 +19,7 @@ interface FormValues {
 
 const InviteMembers = () => {
 	const router = useRouter();
+	const { invitationList } = useOrganization({ invitationList: {} });
 	const [loading, onLoad] = useDisclosure(false);
 	const { mutateAsync: sendOrgInvitation } = trpc.organisation.sendOrgInvitation.useMutation();
 	const { orgId, userId } = useAuth();
@@ -61,6 +61,10 @@ const InviteMembers = () => {
 		},
 		[userId, orgId]
 	);
+
+	useEffect(() => {
+		console.log(invitationList);
+	}, [invitationList]);
 
 	return (
 		<Page.Container extraClassNames="flex flex-col justify-center items-center">
@@ -132,7 +136,7 @@ const InviteMembers = () => {
 					>
 						{form.values.invited_members.map((member, index) => {
 							return (
-								<List.Item className="grow">
+								<List.Item key={index} className="grow">
 									<Text size="sm">{member}</Text>
 								</List.Item>
 							);

@@ -51,15 +51,14 @@ const Signup = ({ emails }) => {
 				'Your password is too weak, use the suggestions increase password strength'
 			),
 		fullname: z.string().nullable(),
-		firstname: z.string({ required_error: 'Required' }).max(25),
-		lastname: z.string({ required_error: 'Required' }).max(25),
-		phone: z.string({ required_error: 'Required' }).max(25)
+		firstname: z.string({ required_error: 'Required' }).max(25).nonempty('Required'),
+		lastname: z.string({ required_error: 'Required' }).max(25).nonempty('Required'),
+		phone: z.string({ required_error: 'Required' }).max(25).nonempty('Required')
 	});
 	const { isLoaded, signUp } = useSignUp();
 	const { setActive } = useClerk();
 	const [loading, setLoading] = useState(false);
 	const [code_form, handlers] = useDisclosure(false);
-	const [newAccount, setNewAccount] = useLocalStorage({ key: STORAGE_KEYS.ACCOUNT, defaultValue: null });
 	const [popoverOpened, setPopoverOpened] = useState(false);
 	const [error, handleError] = useDisclosure(false);
 
@@ -71,9 +70,10 @@ const Signup = ({ emails }) => {
 		}
 	});
 	const router = useRouter();
-	const form = useForm({
+	const form = useForm<Partial<SignupInfo> & { password: string }>({
 		initialValues: {
-			...userForm
+			...userForm,
+			password: ''
 		},
 		validate: zodResolver(SignupSchema)
 	});
@@ -88,15 +88,44 @@ const Signup = ({ emails }) => {
 	));
 
 	const handleSubmit = useCallback(
-		async values => {
+		async (values: SignupInfo) => {
 			setLoading(true);
 			values.fullname = values.firstname + ' ' + values.lastname;
 			values.phone = getE164Number(values.phone);
-			if (!isLoaded) {
+			if (!isLoaded || !signUp) {
 				return;
 			}
 			try {
-				if (signUp) {
+				const param = '__clerk_ticket';
+				const ticket = new URL(window.location.href).searchParams.get(param);
+				if (ticket) {
+					const result = await signUp.create({
+						strategy: 'ticket',
+						ticket,
+						firstName: values.firstname,
+						lastName: values.lastname,
+						password: values.password
+					});
+					console.log(result);
+					if (result.status === 'complete') {
+						setLoading(false);
+						notifySuccess(
+							'member-invitation-signup-success',
+							'Account created successfully',
+							<IconCheck size={20} />
+						);
+						await setActive({ session: result.createdSessionId });
+						router.push(PATHS.HOME);
+					} else if (result.status === 'missing_requirements') {
+						console.log(result.missingFields);
+						setLoading(false);
+						notifyError(
+							'invitation-signup-failed',
+							'Please fill in all required fields',
+							<IconX size={20} />
+						);
+					}
+				} else {
 					const result = await signUp.create({
 						password: values.password,
 						emailAddress: values.email,
@@ -115,7 +144,7 @@ const Signup = ({ emails }) => {
 				notifyError('signup-failure', err?.error?.message ?? err.message, <IconX size={20} />);
 			}
 		},
-		[router, setNewAccount, signUp]
+		[isLoaded, signUp]
 	);
 
 	const confirmSignUp = useCallback(
@@ -127,7 +156,6 @@ const Signup = ({ emails }) => {
 						code
 					});
 					await setActive({ session: result.createdSessionId });
-					// const user = await register.mutateAsync(values);
 					handlers.close();
 					setLoading(false);
 					notifySuccess('verification-success', 'Verification successful!', <IconCheck size={20} />);
@@ -144,6 +172,9 @@ const Signup = ({ emails }) => {
 	);
 
 	useEffect(() => {
+		const param = '__clerk_ticket';
+		const ticket = new URL(window.location.href).searchParams.get(param);
+		console.log(ticket);
 		const storedValue = window.localStorage.getItem(STORAGE_KEYS.SIGNUP_FORM);
 		if (storedValue) {
 			try {

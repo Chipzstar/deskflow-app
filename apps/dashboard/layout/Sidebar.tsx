@@ -133,7 +133,7 @@ const Sidebar = ({ opened, setOpened }) => {
 				<div
 					data-cy="logout-button"
 					className={classes.link}
-					onClick={() => signOut().then(() => console.log('signed out'))}
+					onClick={() => signOut().then(() => router.push(PATHS.LOGIN))}
 				>
 					<IconLogout className={classes.linkIcon} stroke={1.5} />
 				</div>

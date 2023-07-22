@@ -221,6 +221,7 @@ export function Index() {
 export const getServerSideProps: GetServerSideProps = async ctx => {
 	const { userId } = getAuth(ctx.req);
 	const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+	console.table({ userId, user });
 	if (!user) {
 		return {
 			redirect: {
