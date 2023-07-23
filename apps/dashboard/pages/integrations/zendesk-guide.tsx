@@ -15,6 +15,7 @@ import BackButton from '../../components/BackButton';
 import { OAuthToken } from '../../utils/types';
 import { Zendesk } from '@prisma/client';
 import IntegrationHeader from '../../layout/integrations/IntegrationHeader';
+import { PATHS } from '../../utils/constants';
 
 const ZendeskGuide = () => {
 	const { user } = useUser();
@@ -90,7 +91,13 @@ const ZendeskGuide = () => {
 	return (
 		<Page.Container px={25}>
 			<ZendeskDomainInput opened={opened} onClose={handlers.close} integrate={() => integrate('zendesk-guide')} />
-			<IntegrationHeader isActive={!!zendesk?.guide} />
+			<IntegrationHeader
+				isActive={!!zendesk?.guide}
+				goBack={() => {
+					router.back();
+					router.replace(PATHS.INTEGRATIONS);
+				}}
+			/>
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Zendesk Guide Integration</Title>
 				<Image src="/static/images/zendesk-logo.svg" fit="contain" height={150} alt="Zendesk Logo" />

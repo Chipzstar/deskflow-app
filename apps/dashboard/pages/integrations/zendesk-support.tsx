@@ -8,6 +8,7 @@ import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';
 import { useLocalStorage } from '@mantine/hooks';
 import IntegrationHeader from '../../layout/integrations/IntegrationHeader';
+import { PATHS } from '../../utils/constants';
 
 const ZendeskSupport = () => {
 	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery();
@@ -70,7 +71,13 @@ const ZendeskSupport = () => {
 
 	return (
 		<Page.Container>
-			<IntegrationHeader isActive={!!zendesk?.support} />
+			<IntegrationHeader
+				isActive={!!zendesk?.support}
+				goBack={() => {
+					router.back();
+					router.replace(PATHS.INTEGRATIONS);
+				}}
+			/>
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Zendesk Support Integration</Title>
 				<Image src="/static/images/zendesk-logo.svg" fit="contain" height={150} alt="Zendesk Logo" />
