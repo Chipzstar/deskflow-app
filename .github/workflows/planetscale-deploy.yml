@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Planetscale CLI
-        run: curl -sL https://github.com/planetscale/cli/releases/latest/download/pscale-linux-amd64.tar.gz | tar xz && chmod +x planetscale && sudo mv planetscale /usr/local/bin/
+        run: curl -sL https://github.com/planetscale/cli/releases/latest/download/pscale_0.150.0_linux_386.tar.gz | tar xz && chmod +x pscale && sudo mv pscale /usr/local/bin/
 
       - name: Authenticate with Planetscale
         env:
