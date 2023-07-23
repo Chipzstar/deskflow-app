@@ -8,14 +8,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		await runMiddleware(req, res, cors);
 		console.table(req.body);
 		// look up the user with a matching state value
-		const user = await prisma.user.findFirst({
+		const org = await prisma.organization.findFirst({
 			where: {
 				slack_auth_state_id: req.body.state
 			}
 		});
-		if (!user) {
+		if (!org) {
 			return res.status(404).json({
-				error: 'User not found'
+				error: 'Organization not found'
 			});
 		}
 		// App credentials found in the Basic Information section of the app configuration
@@ -30,13 +30,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		console.table(result);
 		const slack = await prisma.slack.findUnique({
 			where: {
-				user_id: user.clerk_id
+				org_id: org.clerk_id
 			}
 		});
 		if (!slack) {
 			await prisma.slack.create({
 				data: {
-					user_id: user.clerk_id,
+					org_id: org.clerk_id,
 					team_name: result?.team?.name ?? '',
 					team_id: result?.team?.id ?? '',
 					access_token: result.access_token,
@@ -47,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		} else {
 			await prisma.slack.update({
 				where: {
-					user_id: user.clerk_id
+					org_id: org.clerk_id
 				},
 				data: {
 					team_name: result?.team?.name ?? '',

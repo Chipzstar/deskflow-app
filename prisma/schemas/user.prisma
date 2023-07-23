@@ -1,22 +1,24 @@
+enum OrganizationRole {
+  admin
+  manager
+  member
+}
+
 model User {
-  id                     Int          @id @default(autoincrement())
-  created_at             DateTime     @default(now())
-  updated_at             DateTime     @updatedAt
-  clerk_id               String       @unique
-  organization_id        String       @default("")
-  email                  String       @unique
+  id                     Int              @id @default(autoincrement())
+  created_at             DateTime         @default(now())
+  updated_at             DateTime         @updatedAt
+  clerk_id               String           @unique
+  organization_id        String           @default("")
+  email                  String           @unique
   firstname              String
   lastname               String
   fullname               String
   stripe_customer_id     String?
   stripe_payment_method  String?
   stripe_subscription_id String?
-  slack_auth_state_id    String       @default("")
-  zendesk_auth_state_id  String       @default("")
-  slack                  Slack?
-  zendesk                Zendesk?
-  organization           Organization @relation(fields: [organization_id], references: [clerk_id], onDelete: Cascade)
-  issues                 Issue[]
+  organization           Organization     @relation(fields: [organization_id], references: [clerk_id], onDelete: Cascade)
+  role                   OrganizationRole @default(value: admin)
 
   @@index([organization_id])
 }

@@ -1,15 +1,15 @@
 model Slack {
-  id               Int      @id @default(autoincrement())
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
-  user_id          String   @unique
-  user             User     @relation(fields: [user_id], references: [clerk_id], onDelete: Cascade)
-  access_token     String   @default("")
-  team_id          String   @default("")
-  team_name        String   @default("")
-  bot_id           String   @default("")
-  bot_access_token String   @default("")
-  scopes           String   @default("")
-
-  @@index([user_id])
+  id               Int          @id @default(autoincrement())
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+  org_id           String       @unique
+  organization     Organization @relation(fields: [org_id], references: [clerk_id], onDelete: Cascade)
+  access_token     String       @default("")
+  team_id          String       @default("")
+  team_name        String       @default("")
+  bot_id           String       @default("")
+  bot_access_token String       @default("")
+  scopes           String       @default("")
+  
+  @@index([org_id])
 }

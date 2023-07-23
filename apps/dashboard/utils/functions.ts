@@ -1,4 +1,20 @@
 import { showNotification } from '@mantine/notifications';
+import { requirements } from './constants';
+import parsePhoneNumber from 'libphonenumber-js';
+
+/**
+ * Returns a sluggified version of a string. For example given a string "Hello World" it will return "hello-world".
+ * @param str
+ */
+export function sluggify(str: string): string {
+	return str
+		.toLowerCase()
+		.replace(/\s+/g, '-')
+		.replace(/[^\w-]+/g, '')
+		.replace(/--+/g, '-')
+		.replace(/^-+/, '')
+		.replace(/-+$/, '');
+}
 
 export function capitalize(str: string): string {
 	return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -13,6 +29,28 @@ export function capitalize_all(str: string): string {
 
 export function sanitize_labels(labels: string[]): string[] {
 	return labels.map(label => capitalize_all(label.trim().replace(/[-_]/g, ' ')));
+}
+
+export function getStrength(password: string) {
+	let multiplier = password.length > 5 ? 0 : 1;
+
+	requirements.forEach(requirement => {
+		if (!requirement.re.test(password)) {
+			multiplier += 1;
+		}
+	});
+
+	return Math.max(100 - (100 / (requirements.length + 1)) * multiplier, 10);
+}
+
+export function getE164Number(phoneNumber: string) {
+	const phone = parsePhoneNumber(phoneNumber, 'GB');
+	if (phone && phone.getPossibleCountries().includes('GB')) {
+		const E164Number = phone.format('E.164');
+		console.log('E164Number:', E164Number);
+		return E164Number;
+	}
+	return phoneNumber;
 }
 
 export function notifySuccess(id: string, message: string, icon: JSX.Element) {

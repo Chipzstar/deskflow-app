@@ -1,0 +1,34 @@
+# pscale deploy-request list $PLANETSCALE_DATABASE
+
+name: Planetscale Deploy
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Planetscale CLI
+        run: curl -sL https://github.com/planetscale/cli/releases/latest/download/pscale-linux-amd64.tar.gz | tar xz && chmod +x planetscale && sudo mv planetscale /usr/local/bin/
+
+      - name: Authenticate with Planetscale
+        env:
+          PLANETSCALE_API_KEY: ${{ secrets.PLANETSCALE_API_KEY }}
+        run: pscale auth login --service-token=$PLANETSCALE_API_KEY
+
+      - name: Create Planetscale Pull Request
+        env:
+          PLANETSCALE_DATABASE: deskflow-db
+          PLANETSCALE_BRANCH: main
+        run: pscale deploy-request create $PLANETSCALE_DATABASE dev --into=$PLANETSCALE_BRANCH
+
+      - name: Deploy Pull Request Changes
+        env:
+          PLANETSCALE_DATABASE: deskflow-db
+        run: pscale deploy-request deploy $PLANETSCALE_DATABASE 8

@@ -1,5 +1,3 @@
-import * as process from 'process';
-
 export const IS_DEVELOPMENT_MODE = process.env.NODE_ENV === 'development';
 export const PORT = process.env.PORT || String(4200);
 
@@ -10,8 +8,6 @@ export const requirements = [
 	{ re: /[A-Z]/, label: 'Includes uppercase letter' },
 	{ re: /[$&+,:;=?@#|'<>.^*()%!-]/, label: 'Includes special symbol' }
 ];
-
-// export const phoneUtil = PhoneNumberUtil.getInstance();
 export const ONE_GB = 1073741824; // in bytes units
 export const FIVE_MB = 5242880; // in bytes units
 export const TEN_MB = 2 * FIVE_MB; // in bytes units
@@ -19,20 +15,24 @@ export const UNDER_TWENTY_FIVE_MB = 24900000; // 24.9 MB
 export const FIVE_HUNDRED_POUNDS = 50000;
 export const DEFAULT_HEADER_HEIGHT = 75;
 export const BANNER_HEIGHT = 65;
-
 export const STORAGE_KEYS = {
 	ACCOUNT: 'account',
 	SIGNUP_FORM: 'signup-form',
-	TEST_MODE: 'test-mode'
+	TEST_MODE: 'test-mode',
+	COMPANY_FORM: 'company-form'
 };
 
 export const PATHS = {
 	HOME: '/',
 	SIGNUP: '/signup',
 	LOGIN: '/login',
+	ONBOARDING: '/onboarding',
+	FORGOT_PASSWORD: '/forgot-password',
+	INVITE_MEMBERS: '/invite-members',
 	CREATE_ORGANISATION: '/create-organisation',
 	INTEGRATIONS: '/integrations',
-	CHAT: '/chat'
+	CHAT: '/chat',
+	ORGANISATION_PROFILE: '/organisation-profile'
 };
 
-export const AUTH_ROUTES = [PATHS.LOGIN, PATHS.SIGNUP, PATHS.CREATE_ORGANISATION];
+export const AUTH_ROUTES = [PATHS.LOGIN, PATHS.SIGNUP, PATHS.CREATE_ORGANISATION, PATHS.INVITE_MEMBERS];

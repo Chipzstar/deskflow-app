@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Page from '../layout/Page';
 import { Stack, Title, Text, Group, Space } from '@mantine/core';
-import { useUser } from '@clerk/nextjs';
+import { useAuth, useClerk, useUser } from '@clerk/nextjs';
 import { trpc } from '../utils/trpc';
 import Pluralize from 'react-pluralize';
 import StatCard from '../components/StatCard';
@@ -23,6 +23,9 @@ import { Line } from 'react-chartjs-2';
 import { sanitize_labels } from '../utils/functions';
 
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { GetServerSideProps } from 'next';
+import { buildClerkProps, clerkClient, getAuth } from '@clerk/nextjs/server';
+import { PATHS } from '../utils/constants';
 
 ChartJS.register(
 	Tooltip,
@@ -37,19 +40,19 @@ ChartJS.register(
 
 export function Index() {
 	const { user } = useUser();
+	const { client } = useClerk();
 	const { data: issues, isLoading: issuesLoading } = trpc.issue.getIssues.useQuery();
 	const { data: employeeIds, isLoading: employeesLoading } = trpc.issue.getUniqueEmployees.useQuery();
+	const { isLoaded, orgId, userId } = useAuth();
 
 	const num_issues = useMemo(() => (issues ? issues.length : 0), [issues]);
 	const num_employees = useMemo(() => (employeeIds ? employeeIds.length : 0), [employeeIds]);
-
 	const issues_per_employee = useMemo(() => {
 		if (employeeIds && issues) {
 			return !employeeIds.length ? 0 : Math.ceil(issues.length / employeeIds.length);
 		}
 		return 0;
 	}, [issues, employeeIds]);
-
 	const time_to_resolution = useMemo(() => {
 		if (issues) {
 			return issues.reduce((prev, issue) => {
@@ -91,6 +94,10 @@ export function Index() {
 			]
 		};
 	}, [issues]);
+
+	useEffect(() => {
+		isLoaded && console.table({ orgId, userId });
+	}, [isLoaded]);
 
 	return (
 		<Page.Container>
@@ -210,5 +217,36 @@ export function Index() {
 		</Page.Container>
 	);
 }
+
+export const getServerSideProps: GetServerSideProps = async ctx => {
+	const { userId } = getAuth(ctx.req);
+	const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+	console.table({ userId, user });
+	if (!user) {
+		return {
+			redirect: {
+				destination: PATHS.LOGIN,
+				permanent: false
+			}
+		};
+	} else {
+		const organization_list = userId
+			? await clerkClient.users.getOrganizationMembershipList({ userId })
+			: undefined;
+		if (!organization_list?.length) {
+			return {
+				redirect: {
+					destination: `${PATHS.CREATE_ORGANISATION}?redirect_url= ${ctx.resolvedUrl}`,
+					permanent: false
+				}
+			};
+		}
+	}
+	return {
+		props: {
+			...buildClerkProps(ctx.req, { user })
+		}
+	};
+};
 
 export default Index;

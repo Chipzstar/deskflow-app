@@ -7,13 +7,14 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { notifyError, notifySuccess } from '../../utils/functions';
 import AddToSlack from '../../components/AddToSlack';
-import IntegrationStatus from '../../components/IntegrationStatus';
 import { v4 as uuidv4 } from 'uuid';
 import querystring from 'querystring';
+import IntegrationHeader from '../../layout/integrations/IntegrationHeader';
+import { PATHS } from '../../utils/constants';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
-	const { mutate: updateState } = trpc.user.updateSlackState.useMutation();
+	const { mutate: updateState } = trpc.organisation.updateSlackState.useMutation();
 	const router = useRouter();
 	const state = uuidv4();
 
@@ -60,8 +61,14 @@ const Slack = () => {
 	}, [state]);
 
 	return (
-		<Page.Container>
-			<IntegrationStatus isActive={!!slack} />
+		<Page.Container px={25} py="sm">
+			<IntegrationHeader
+				isActive={!!slack}
+				goBack={() => {
+					router.back();
+					router.replace(PATHS.INTEGRATIONS);
+				}}
+			/>
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Slack Integration</Title>
 				<Image src="/static/images/alfred.svg" height={100} width={100} alt="Alfred logo" />

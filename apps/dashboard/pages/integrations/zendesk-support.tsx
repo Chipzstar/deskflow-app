@@ -3,11 +3,12 @@ import axios from 'axios';
 import { notifyError, notifySuccess } from '../../utils/functions';
 import { IconCheck, IconExternalLink, IconX } from '@tabler/icons-react';
 import Page from '../../layout/Page';
-import IntegrationStatus from '../../components/IntegrationStatus';
 import { Button, Group, Image, Space, Stack, Text, Title } from '@mantine/core';
 import { trpc } from '../../utils/trpc';
 import { useRouter } from 'next/router';
 import { useLocalStorage } from '@mantine/hooks';
+import IntegrationHeader from '../../layout/integrations/IntegrationHeader';
+import { PATHS } from '../../utils/constants';
 
 const ZendeskSupport = () => {
 	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery();
@@ -70,7 +71,13 @@ const ZendeskSupport = () => {
 
 	return (
 		<Page.Container>
-			<IntegrationStatus isActive={!!zendesk?.support} />
+			<IntegrationHeader
+				isActive={!!zendesk?.support}
+				goBack={() => {
+					router.back();
+					router.replace(PATHS.INTEGRATIONS);
+				}}
+			/>
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Zendesk Support Integration</Title>
 				<Image src="/static/images/zendesk-logo.svg" fit="contain" height={150} alt="Zendesk Logo" />

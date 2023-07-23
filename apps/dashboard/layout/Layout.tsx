@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { AppShell, Burger, Header, Image, MediaQuery, Text } from '@mantine/core';
+import { AppShell, Burger, Group, Header, Image, MediaQuery, Text } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { AUTH_ROUTES, DEFAULT_HEADER_HEIGHT, PATHS } from '../utils/constants';
 import Sidebar from './Sidebar';
-import { UserButton } from '@clerk/nextjs';
+import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
 
 const Layout = ({ children }) => {
 	const router = useRouter();
@@ -30,18 +30,40 @@ const Layout = ({ children }) => {
 										deskflow
 									</Text>
 								</div>
-								<div className="flex justify-center space-x-2" role="button">
-									<UserButton
-										showName={true}
-										appearance={{
-											userProfile: {
-												elements: {
-													breadcrumbs: 'bg-slate-500'
+								<Group spacing="xl" align="center">
+									<div role="button">
+										<UserButton
+											showName={true}
+											appearance={{
+												userProfile: {
+													elements: {
+														breadcrumbs: 'bg-slate-500'
+													}
 												}
-											}
-										}}
-									/>
-								</div>
+											}}
+										/>
+									</div>
+									<div className="h-full">
+										<OrganizationSwitcher
+											hidePersonal
+											/*organizationProfileMode="navigation"
+											organizationProfileUrl={PATHS.ORGANISATION_PROFILE}*/
+											appearance={{
+												elements: {
+													rootBox: {
+														display: 'flex',
+														justifyContent: 'center',
+														alignItems: 'center'
+													},
+													organizationSwitcherPopoverActions: {
+														display: 'none',
+														visibility: 'hidden'
+													}
+												}
+											}}
+										/>
+									</div>
+								</Group>
 								<MediaQuery largerThan="sm" styles={{ display: 'none' }}>
 									<Burger
 										opened={opened}

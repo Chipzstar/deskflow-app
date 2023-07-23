@@ -6,7 +6,7 @@ const issueRouter = createTRPCRouter({
 		try {
 			return await ctx.prisma.issue.findMany({
 				where: {
-					user_id: ctx.auth.userId
+					org_id: ctx.auth.orgId
 				}
 			});
 		} catch (err) {
@@ -18,7 +18,7 @@ const issueRouter = createTRPCRouter({
 		try {
 			const issues = await ctx.prisma.issue.findMany({
 				where: {
-					user_id: ctx.auth.userId
+					org_id: ctx.auth.orgId
 				}
 			});
 			return [...new Set(issues.map(issue => issue.employee_id))];
