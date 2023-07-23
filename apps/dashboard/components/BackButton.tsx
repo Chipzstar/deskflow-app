@@ -1,16 +1,14 @@
 import React from 'react';
-import { Text, Button, rem } from '@mantine/core';
+import { Button, Text } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
-import { useRouter } from 'next/router';
 
-const BackButton = () => {
-	const router = useRouter();
+const BackButton = ({ goBack }) => {
 	return (
 		<Button
 			variant="transparent"
 			size="xl"
 			className="test2"
-			onClick={router.back}
+			onClick={goBack}
 			sx={theme => ({
 				position: 'relative'
 			})}

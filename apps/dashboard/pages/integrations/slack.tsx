@@ -10,6 +10,7 @@ import AddToSlack from '../../components/AddToSlack';
 import { v4 as uuidv4 } from 'uuid';
 import querystring from 'querystring';
 import IntegrationHeader from '../../layout/integrations/IntegrationHeader';
+import { PATHS } from '../../utils/constants';
 
 const Slack = () => {
 	const { data: slack } = trpc.slack.getSlackInfo.useQuery();
@@ -61,7 +62,13 @@ const Slack = () => {
 
 	return (
 		<Page.Container px={25} py="sm">
-			<IntegrationHeader isActive={!!slack} />
+			<IntegrationHeader
+				isActive={!!slack}
+				goBack={() => {
+					router.back();
+					router.replace(PATHS.INTEGRATIONS);
+				}}
+			/>
 			<Stack align="center" justify="space-around" className="h-full">
 				<Title weight={500}>Slack Integration</Title>
 				<Image src="/static/images/alfred.svg" height={100} width={100} alt="Alfred logo" />
