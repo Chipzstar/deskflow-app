@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import axios from 'axios';
 import { OAuthToken } from '../../utils/types';
+import { log } from 'next-axiom';
 
 const zendeskRouter = createTRPCRouter({
 	getZendeskInfo: protectedProcedure.query(async ({ ctx, input }) => {
@@ -55,7 +56,7 @@ const zendeskRouter = createTRPCRouter({
 					redirect_uri: `${process.env.NGROK_URL || process.env.HOST_DOMAIN}/integrations/zendesk-guide`
 				});
 				console.log('-----------------------------------------------');
-				console.log(result);
+				log.debug('zendesk token result', result);
 				// fetch the account user's information
 				const { data: profile } = await axios.get(
 					`https://${input.subdomain}.zendesk.com/api/v2/users/me.json`,
@@ -65,7 +66,6 @@ const zendeskRouter = createTRPCRouter({
 						}
 					}
 				);
-				console.log(profile.user);
 				let zendesk = await ctx.prisma.zendesk.findUnique({
 					where: {
 						org_id: org.clerk_id
@@ -99,7 +99,7 @@ const zendeskRouter = createTRPCRouter({
 					});
 				}
 				console.log('-----------------------------------------------');
-				console.log(zendesk);
+				log.debug('Zendesk DB integration', zendesk);
 				return result;
 			} catch (err) {
 				console.error(err);

@@ -7,18 +7,16 @@ import axios from 'axios';
 import { notifyError, notifySuccess } from '../../utils/functions';
 import { IconCheck, IconExternalLink, IconPlugConnected, IconRefresh, IconX } from '@tabler/icons-react';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
-import IntegrationStatus from '../../components/IntegrationStatus';
-import { useUser, useSession } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import useIntegrate from '../../hooks/useIntegrate';
 import ZendeskDomainInput from '../../modals/ZendeskDomainInput';
-import BackButton from '../../components/BackButton';
 import { OAuthToken } from '../../utils/types';
 import { Zendesk } from '@prisma/client';
 import IntegrationHeader from '../../layout/integrations/IntegrationHeader';
 import { PATHS } from '../../utils/constants';
 
 const ZendeskGuide = () => {
-	const { user } = useUser();
+	const { orgSlug } = useAuth();
 	const util = trpc.useContext();
 	const { data: zendesk } = trpc.zendesk.getZendeskInfo.useQuery();
 	const { mutateAsync: zendeskExchangeToken } = trpc.zendesk.exchangeToken.useMutation({
@@ -31,12 +29,12 @@ const ZendeskGuide = () => {
 	const [opened, handlers] = useDisclosure(false);
 	const [integrate] = useIntegrate(loading, setLoading);
 
-	function syncKnowledgeBase(result: OAuthToken | Zendesk, email: string) {
+	function syncKnowledgeBase(result: OAuthToken | Zendesk, slug: string) {
 		setSyncing(true);
 		axios
 			.post(
 				`${process.env.NEXT_PUBLIC_NGROK_API_URL || process.env.NEXT_PUBLIC_API_HOST}/zendesk/knowledge-base`,
-				{ token: result.access_token, subdomain, email }
+				{ token: result.access_token, subdomain, slug }
 			)
 			.then(res => {
 				console.table(res.data);
@@ -63,14 +61,14 @@ const ZendeskGuide = () => {
 		const hasCode = searchParams.has('code');
 		const hasState = searchParams.has('state');
 		const hasError = searchParams.has('error_description');
-		if (user && subdomain && hasCode && hasState) {
+		if (orgSlug && subdomain && hasCode && hasState) {
 			zendeskExchangeToken({
 				type: 'guide',
 				subdomain,
 				state: searchParams.get('state') ?? '',
 				code: searchParams.get('code') ?? ''
 			})
-				.then(res => syncKnowledgeBase(res, user.emailAddresses[0].emailAddress))
+				.then(res => syncKnowledgeBase(res, orgSlug))
 				.catch(err => {
 					console.error(err);
 					notifyError(
@@ -86,7 +84,7 @@ const ZendeskGuide = () => {
 				<IconX size={20} />
 			);
 		}
-	}, [subdomain, user]);
+	}, [subdomain, orgSlug]);
 
 	return (
 		<Page.Container px={25}>
@@ -143,7 +141,7 @@ const ZendeskGuide = () => {
 							variant="outline"
 							color="green.8"
 							leftIcon={<IconRefresh size="0.9rem" />}
-							onClick={() => syncKnowledgeBase(zendesk, user ? user.emailAddresses[0].emailAddress : '')}
+							onClick={orgSlug ? () => syncKnowledgeBase(zendesk, orgSlug) : undefined}
 						>
 							Re-Sync Knowledge Base
 						</Button>
