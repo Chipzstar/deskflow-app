@@ -74,7 +74,7 @@ const ZendeskSupport = () => {
 			<IntegrationHeader
 				isActive={!!zendesk?.support}
 				goBack={() => {
-					router.back();
+					// router.back();
 					router.replace(PATHS.INTEGRATIONS);
 				}}
 			/>

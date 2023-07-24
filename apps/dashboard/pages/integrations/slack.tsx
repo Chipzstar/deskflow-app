@@ -65,7 +65,6 @@ const Slack = () => {
 			<IntegrationHeader
 				isActive={!!slack}
 				goBack={() => {
-					router.back();
 					router.replace(PATHS.INTEGRATIONS);
 				}}
 			/>

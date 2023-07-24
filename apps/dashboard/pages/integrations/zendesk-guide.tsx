@@ -94,7 +94,6 @@ const ZendeskGuide = () => {
 			<IntegrationHeader
 				isActive={!!zendesk?.guide}
 				goBack={() => {
-					router.back();
 					router.replace(PATHS.INTEGRATIONS);
 				}}
 			/>
