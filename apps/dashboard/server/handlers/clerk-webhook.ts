@@ -75,6 +75,14 @@ export const updateUser = async ({ event, prisma }: { event: UserWebhookEvent; p
 export const deleteUser = async ({ event, prisma }: { event: UserWebhookEvent; prisma: PrismaClient }) => {
 	try {
 		const payload = event.data as DeletedObjectJSON;
+		// check that the user with clerk_id exists already
+		const existingUser = await prisma.user.findUnique({
+			where: { clerk_id: payload.id }
+		});
+		if (!existingUser) {
+			console.log('user does not exist');
+			return { message: 'User does not exist' };
+		}
 		const user = await prisma.user.delete({
 			where: {
 				clerk_id: payload.id
